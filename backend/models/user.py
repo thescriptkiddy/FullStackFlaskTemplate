@@ -1,18 +1,19 @@
 import bcrypt
+import uuid
+from sqlalchemy.dialects.postgresql import UUID
 from flask import current_app
 from flask_login import UserMixin
 from shared.extensions import db
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_bcrypt import Bcrypt
 
 
 class User(db.Model, UserMixin):
     __tablename__ = "user"
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True)
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True)
     password_hash = db.Column(db.String(255, ))
-    firstname = db.Column(db.String(100))
-    lastname = db.Column(db.String(100))
+    firstname = db.Column(db.String(50))
+    lastname = db.Column(db.String(50))
     is_active = db.Column(db.Boolean)
 
     def set_password(self, password: str) -> None:
