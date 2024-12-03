@@ -1,3 +1,5 @@
+import pytest
+from sqlalchemy.exc import IntegrityError
 from backend.models.user import User, load_user
 from tests.user.conftest import new_user_in_db
 
@@ -8,13 +10,48 @@ def test_user_repr(new_user_in_db):
 
 
 # TODO Test Password Hashing
+def test_set_password_hashing(new_user_in_db):
+    """Set a new password and check whether it is hashed or not"""
+    new_user_in_db.set_password("new_password")
+    assert new_user_in_db.password_hash != "new_password"
+    assert new_user_in_db.check_password("new_password")
 
 
-# TODO Test Unique Email Constraint
+def test_unique_email(init_database):
+    """Tests that duplicate emails can't be added"""
+    new_user1 = User(
+        firstname="Hans",
+        lastname="Peter",
+        email="hans.peter@gmail.com",
+        is_active=False,
+    )
+
+    new_user2 = User(
+        firstname="Hans",
+        lastname="Peter",
+        email="hans.peter@gmail.com",
+        is_active=False,
+    )
+
+    init_database.session.add(new_user1)
+    init_database.session.commit()
+
+    with pytest.raises(IntegrityError):
+        init_database.session.add(new_user2)
+        init_database.session.commit()
+
 
 # TODO Test User Activation Status:
+def test_activation_status_for_new_user(new_user_in_db):
+    """Only for new users"""
+    assert new_user_in_db.is_active is not True
+
+    new_user_in_db.is_active = True
+    assert new_user_in_db.is_active is True
 
 # TODO Test Password Change:
+
+
 
 # Test Loading Non-Existent User:
 
