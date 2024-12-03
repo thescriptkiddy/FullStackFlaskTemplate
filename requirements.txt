@@ -1,0 +1,16 @@
+Flask
+Flask-Security
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-WTF
+Flask-Admin
+alembic
+gunicorn
+itsdangerous
+pytest
+Werkzeug
+wheel
+Jinja2
+click
+Bootstrap-Flask
+selenium
