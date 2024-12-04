@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
-from backend.models.user import User, load_user
-from tests.user.conftest import new_user_in_db
+from backend.models.user import User, load_user, UserNotFoundError
+from tests.user.conftest import new_user_in_db, db
 
 
 def test_user_repr(new_user_in_db):
@@ -9,7 +9,6 @@ def test_user_repr(new_user_in_db):
     assert repr(new_user_in_db) == '<User hans.peter@gmail.com>'
 
 
-# TODO Test Password Hashing
 def test_set_password_hashing(new_user_in_db):
     """Set a new password and check whether it is hashed or not"""
     new_user_in_db.set_password("new_password")
@@ -41,7 +40,6 @@ def test_unique_email(init_database):
         init_database.session.commit()
 
 
-# TODO Test User Activation Status:
 def test_activation_status_for_new_user(new_user_in_db):
     """Only for new users"""
     assert new_user_in_db.is_active is not True
@@ -49,11 +47,20 @@ def test_activation_status_for_new_user(new_user_in_db):
     new_user_in_db.is_active = True
     assert new_user_in_db.is_active is True
 
-# TODO Test Password Change:
+
+def test_password_change_by_user(new_user_in_db):
+    """Testing changing a user's password"""
+    assert new_user_in_db.set_password("newpassword")
+    assert new_user_in_db.check_password("newpassword")
+    assert not new_user_in_db.check_password("admin42")
 
 
+# TODO UUID Handling issues
+# def test_to_load_non_exiting_user(new_user_in_db):
+#     with pytest.raises(UserNotFoundError) as info:
+#         load_user("23c39cc3-60ef-4cf7-b718-4aa5414c6285")
+#     assert str(info.value) == "User with id 23c39cc3-60ef-4cf7-b718-4aa5414c6285 does not exist"
 
-# Test Loading Non-Existent User:
 
 def test_new_user_in_db(new_user_in_db):
     assert new_user_in_db is not None

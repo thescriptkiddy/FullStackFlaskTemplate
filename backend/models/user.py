@@ -31,6 +31,15 @@ class User(db.Model, UserMixin):
 
 
 # User-ID needs to be a string
+
+class UserNotFoundError(Exception):
+    pass
+
+
+# TODO UUID Handling issues
 @login_manager.user_loader
 def load_user(user_id):
-    return db.get_or_404(User, user_id)
+    user = db.get_or_404(User, user_id)
+    if user is None:
+        raise UserNotFoundError(f"User with id {user_id} does not exist")
+    return user
