@@ -4,18 +4,84 @@
     {% block head %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}" rel="stylesheet">
     <title>{% block title %}{% endblock %} - My Webpage</title>
     {% endblock %}
   </head>
-  <body>
-  <div id="content">{% block content %}{% endblock %}</div>
-  <div id="footer">
-        {% block footer %}
-        &copy; Copyright 2008 by <a href="http://simonhardt.de/">you</a>.
-        {% endblock %}
+  <body class="d-flex flex-column min-vh-100">
+    <!-- Header -->
+<nav class="navbar navbar-dark bg-dark" aria-label="Dark offcanvas navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Dark offcanvas navbar</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbarDark" aria-controls="offcanvasNavbarDark" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasNavbarDark" aria-labelledby="offcanvasNavbarDarkLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasNavbarDarkLabel">Offcanvas</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('items.items_index') }}">Items</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+              </ul>
+            </li>
+          </ul>
+          <form class="d-flex mt-3" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
     </div>
+  </nav>
+    <!-- Header End  -->
+
+    <!-- Main content -->
+    <div class="container-fluid flex-grow-1">
+      <div class="row">
+
+        <!-- Content area -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          {% block content %}{% endblock %}
+        </main>
+      </div>
+    </div>
+    <!-- Footer area -->
+    <footer class="mt-auto py-3 bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 d-flex align-items-center">
+            <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
+              <svg class="bi" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
+            </a>
+            <span class="mb-3 mb-md-0 text-body-secondary">© 2024 Simon Hardt</span>
+          </div>
+          <ul class="col-md-6 nav justify-content-end list-unstyled d-flex">
+            <li class="ms-3"><a class="text-body-secondary" href="#"><i class="bi bi-twitter" style="font-size: 24px;"></i></a></li>
+            <li class="ms-3"><a class="text-body-secondary" href="#"><i class="bi bi-linkedin" style="font-size: 24px;"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
     <!-- Bootstrap JS and Popper.js -->
-    <script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 import click
 import os
-from flask import Flask
+from flask import Flask, render_template
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask.cli import with_appcontext
@@ -14,7 +14,7 @@ from backend.app.items import bp
 
 def create_app(config_class=config.Config):
     """Application-Factory-Pattern"""
-    app = Flask(__name__, template_folder='../frontend/templates')
+    app = Flask(__name__, template_folder='../frontend/templates', static_folder='../frontend/static')
     app.config.from_object(config_class)
 
     # Initialize Flask extensions here
@@ -44,6 +44,6 @@ def create_app(config_class=config.Config):
 
     @app.route('/')
     def test_page():
-        return '<h1>Testing the Flask Application Factory Pattern</h1>'
-
+        # return '<h1>Testing the Flask Application Factory Pattern</h1>'
+        return render_template("factory-pattern.html")
     return app
