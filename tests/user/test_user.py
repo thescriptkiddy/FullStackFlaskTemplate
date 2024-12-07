@@ -1,7 +1,9 @@
 import pytest
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from backend.models.user import User, load_user, UserNotFoundError
-from tests.user.conftest import new_user_in_db, db
+from tests.user.conftest import new_user_in_db
+from backend.app.database import db_session
 
 
 def test_user_repr(new_user_in_db):
@@ -12,7 +14,7 @@ def test_user_repr(new_user_in_db):
 def test_set_password_hashing(new_user_in_db):
     """Set a new password and check whether it is hashed or not"""
     new_user_in_db.set_password("new_password")
-    assert new_user_in_db.password_hash != "new_password"
+    assert new_user_in_db.password != "new_password"
     assert new_user_in_db.check_password("new_password")
 
 
@@ -32,12 +34,12 @@ def test_unique_email(init_database):
         is_active=False,
     )
 
-    init_database.session.add(new_user1)
-    init_database.session.commit()
+    db_session.add(new_user1)
+    db_session.commit()
 
     with pytest.raises(IntegrityError):
-        init_database.session.add(new_user2)
-        init_database.session.commit()
+        db_session.add(new_user2)
+        db_session.commit()
 
 
 def test_activation_status_for_new_user(new_user_in_db):
@@ -93,12 +95,15 @@ def test_get_all_users(init_database):
         is_active=False,
     )
 
-    init_database.session.add(user1)
-    init_database.session.add(user2)
-    init_database.session.commit()
+    db_session.add(user1)
+    db_session.add(user2)
+    db_session.commit()
 
-    result = init_database.session.execute(init_database.Select(User))
-    all_users = result.scalars()
+    # TODO LegacyAPIWarning:
+    stmt = select(User)
+
+    result = db_session.execute(stmt)
+    all_users = result.scalars().all()
 
     assert len(list(all_users)) == 2
     assert user1.lastname == "Peter"

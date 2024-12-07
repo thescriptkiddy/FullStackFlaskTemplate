@@ -1,6 +1,7 @@
 import pytest
-from shared.extensions import db
+
 from backend.models.user import User
+from backend.app.database import db_session
 
 
 @pytest.fixture
@@ -16,7 +17,6 @@ def new_user_in_db(init_database):
 
     new_user.set_password(password="admin42")
 
-    db.session.add(new_user)
-    db.session.commit()
-
+    db_session.add(new_user)
+    db_session.commit()
     return new_user

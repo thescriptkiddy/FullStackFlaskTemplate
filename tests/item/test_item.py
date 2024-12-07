@@ -1,6 +1,6 @@
 from backend.models.item import Item
 from tests.item.conftest import new_item_in_db
-from shared.extensions import db
+from backend.app.database import db_session
 
 def test_item_repr(new_item_in_db):
     """Test string representation of an item"""
@@ -21,9 +21,9 @@ def test_change_title(new_item_in_db):
     new_title = "Updated title"
     new_item_in_db.title = new_title
 
-    db.session.commit()
+    db_session.commit()
 
-    db.session.refresh(new_item_in_db)
+    db_session.refresh(new_item_in_db)
 
     assert new_item_in_db.title == new_title
     assert new_item_in_db.title != original_title

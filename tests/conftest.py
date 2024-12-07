@@ -1,15 +1,16 @@
 import pytest
-from shared.extensions import db
 from backend import create_app
+from backend.app.database import db_session, Session, engine, Base
 
 
 @pytest.fixture()
 def app():
     app = create_app()
     with app.app_context():
-        db.create_all()
+        Base.metadata.create_all(bind=db_session.bind)
         yield app
-        db.drop_all()
+    with app.app_context():
+        Base.metadata.drop_all(bind=db_session.bind)
 
 
 @pytest.fixture()
@@ -25,9 +26,9 @@ def runner(app):
 @pytest.fixture()
 def init_database(app):
     with app.app_context():
-        db.create_all()
-        yield db
-        db.drop_all()
+        Base.metadata.create_all(bind=db_session.bind)
+        yield app
+        Base.metadata.drop_all(bind=db_session.bind)
 
 
 @pytest.fixture()

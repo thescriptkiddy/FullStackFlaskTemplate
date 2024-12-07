@@ -1,15 +1,16 @@
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from shared.extensions import db
+from backend.app.database import Base, db_session
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 
 
-class Item(db.Model):
+class Item(Base):
     __tablename__ = "items"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    uuid = db.Column(UUID(as_uuid=True), unique=True, default=uuid.uuid4)
-    title = db.Column(db.String(255), unique=True, nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    uuid = Column(UUID(as_uuid=True), unique=True, default=uuid.uuid4)
+    title = Column(String(255), unique=True, nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="items")
 
     def __repr__(self):
