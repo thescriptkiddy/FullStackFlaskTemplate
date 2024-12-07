@@ -12,7 +12,7 @@ def new_user_in_db(init_database):
         firstname="Hans",
         lastname="Peter",
         email="hans.peter@gmail.com",
-        is_active=False,
+        active=False,
     )
 
     new_user.set_password(password="admin42")

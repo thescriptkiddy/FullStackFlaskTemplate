@@ -10,10 +10,6 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Table
 from shared.extensions import LoginManager, login_manager
 from flask_bcrypt import Bcrypt
 
-# roles_users = Table('roles_users', Base.metadata,
-#                     Column('user_id', Integer(), ForeignKey('users.id'), primary_key=True),
-#                     Column('role_id', Integer(), ForeignKey('roles.id'), primary_key=True)
-#                     )
 
 roles_users = Table('roles_users', Base.metadata,
                     Column('user_id', Integer(), ForeignKey('users.id')),

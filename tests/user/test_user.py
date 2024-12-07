@@ -24,14 +24,14 @@ def test_unique_email(init_database):
         firstname="Hans",
         lastname="Peter",
         email="hans.peter@gmail.com",
-        is_active=False,
+        active=False,
     )
 
     new_user2 = User(
         firstname="Hans",
         lastname="Peter",
         email="hans.peter@gmail.com",
-        is_active=False,
+        active=False,
     )
 
     db_session.add(new_user1)
@@ -44,10 +44,10 @@ def test_unique_email(init_database):
 
 def test_activation_status_for_new_user(new_user_in_db):
     """Only for new users"""
-    assert new_user_in_db.is_active is not True
+    assert new_user_in_db.active is not True
 
-    new_user_in_db.is_active = True
-    assert new_user_in_db.is_active is True
+    new_user_in_db.active = True
+    assert new_user_in_db.active is True
 
 
 def test_password_change_by_user(new_user_in_db):
@@ -85,14 +85,14 @@ def test_get_all_users(init_database):
         firstname="Hans",
         lastname="Peter",
         email="hans.peter1@gmail.com",
-        is_active=False,
+        active=False,
     )
 
     user2 = User(
         firstname="Marie",
         lastname="Curie",
         email="marie.curie@gmail.com",
-        is_active=False,
+        active=False,
     )
 
     db_session.add(user1)
