@@ -7,7 +7,7 @@ Flask-Admin
 alembic
 gunicorn
 itsdangerous
-pytest
+pytest~=8.3.4
 Werkzeug~=3.1.3
 wheel
 Jinja2
@@ -17,3 +17,5 @@ selenium
 bcrypt~=4.2.1
 SQLAlchemy~=2.0.36
 WTForms~=3.1.2
+
+python-dotenv~=1.0.1
