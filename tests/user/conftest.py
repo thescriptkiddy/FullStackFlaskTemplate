@@ -2,6 +2,7 @@ import pytest
 
 from backend.models.user import User
 from backend.app.database import db_session
+from tests.conftest import init_database
 
 
 @pytest.fixture
@@ -20,3 +21,5 @@ def new_user_in_db(init_database):
     db_session.add(new_user)
     db_session.commit()
     return new_user
+
+

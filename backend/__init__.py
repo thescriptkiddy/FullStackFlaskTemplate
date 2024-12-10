@@ -1,24 +1,14 @@
-from backend.models.role import Role
+# from backend.models.role import Role
 from backend.models.user import User
 from backend.models.item import Item
 import click
-import os
 from flask import Flask, render_template, redirect, url_for
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask.cli import with_appcontext
-from flask_bootstrap import Bootstrap5
-from flask_security import SQLAlchemySessionUserDatastore, Security
 from shared import config
 from backend.app.items import bp
 from backend.app.database import db_session, Base
-from flask_migrate import Migrate
-from shared.extensions import LoginManager
-from flask_mailman import Mail
-from dotenv import load_dotenv
-
-migrate = Migrate()
-login_manager = LoginManager()
+from shared.extensions import init_extensions
 
 
 def create_app(config_class=config.Config):
@@ -27,16 +17,7 @@ def create_app(config_class=config.Config):
     app.config.from_object(config_class)
 
     app.teardown_appcontext(lambda exc: db_session.close())
-
-    # Flask-Security
-    user_datastore = SQLAlchemySessionUserDatastore(db_session, User, Role)
-    security = Security(app, user_datastore)
-
-    # Initialize Flask extensions
-    migrate.init_app(app, db_session)
-    login_manager.init_app(app)
-    Bootstrap5(app)
-    mail = Mail(app)
+    init_extensions(app)
 
     # Register blueprints here
     from backend.app.items import bp as items_bp
@@ -69,6 +50,3 @@ def create_app(config_class=config.Config):
     return app
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    return db_session.get(User, user_id)

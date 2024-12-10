@@ -1,9 +1,11 @@
 import pytest
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from backend.models.user import User, load_user, UserNotFoundError
+from backend.models.user import User, UserNotFoundError
 from tests.user.conftest import new_user_in_db
 from backend.app.database import db_session
+from tests.conftest import init_database
+from backend.app.auth.service import load_user
 
 
 def test_user_repr(new_user_in_db):

@@ -1,15 +1,11 @@
 import bcrypt
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
-from flask_login import UserMixin
-from flask_security.models import sqla as sqla
 from flask_security import UserMixin
 from sqlalchemy.orm import relationship
 from backend.app.database import Base, db_session
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Table
-from shared.extensions import LoginManager, login_manager
-from flask_bcrypt import Bcrypt
-
+from pydantic import BaseModel, EmailStr, Field
 
 roles_users = Table('roles_users', Base.metadata,
                     Column('user_id', Integer(), ForeignKey('users.id')),
@@ -27,11 +23,10 @@ class User(Base, UserMixin):
     firstname = Column(String(50))
     lastname = Column(String(50))
     active = Column(Boolean)
-    # roles_id = Column(Integer, ForeignKey('roles.id'))
+    # Relationships
     roles = relationship('Role', secondary=roles_users,
                          back_populates='users')
 
-    # Relationships
     items = relationship("Item", back_populates="owner")
 
     def __init__(self, *args, **kwargs):
@@ -52,13 +47,49 @@ class User(Base, UserMixin):
         password_bytes = password.encode('utf-8')
         return bcrypt.checkpw(password_bytes, self.password.encode('utf-8'))
 
+# DataTransferObject Classes currently not in use!
+
+
+class UserCreate(BaseModel):
+    email: EmailStr = Field(max_length=255)
+    password: str = Field(min_length=8)
+    firstname: str | None = Field(default=None, max_length=255)
+    lastname: str | None = Field(default=None, max_length=255)
+
+
+class UserRegistration(BaseModel):
+    email: EmailStr = Field(max_length=255)
+    password: str = Field(min_length=8)
+    firstname: str = Field(max_length=255)
+    lastname: str = Field(max_length=255)
+
+
+class UserUpdate(BaseModel):
+    firstname: str | None = Field(max_length=255)
+    lastname: str | None = Field(max_length=255)
+    email: EmailStr | None = Field(max_length=255)
+
+
+class UserPasswordChange(BaseModel):
+    current_password: str = Field(min_length=8)
+    new_password: str = Field(min_length=8)
+
+
+class UserPublic(BaseModel):
+    id: int
+    email: EmailStr = Field(max_length=255)
+    firstname: str = Field(max_length=255)
+    lastname: str = Field(max_length=255)
+    active: bool
+
+
+class UserInternal(UserPublic):
+    uuid: uuid.UUID
+    fs_uniquifier: str
+    roles: list[str]
+
 
 # User-ID needs to be a string
 
 class UserNotFoundError(Exception):
     pass
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return db_session.get(User, user_id)

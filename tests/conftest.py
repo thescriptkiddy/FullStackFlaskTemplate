@@ -1,16 +1,18 @@
 import pytest
 from backend import create_app
 from backend.app.database import db_session, Session, engine, Base
+from shared.config import Config
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def app():
     app = create_app()
-    with app.app_context():
-        Base.metadata.create_all(bind=db_session.bind)
-        yield app
-    with app.app_context():
-        Base.metadata.drop_all(bind=db_session.bind)
+    app.config.from_object(Config)  # Load config from your Config class
+    app.config.update({
+        'TESTING': True,
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'  # Override for testing
+    })
+    return app
 
 
 @pytest.fixture()
@@ -23,12 +25,20 @@ def runner(app):
     return app.test_cli_runner()
 
 
-@pytest.fixture()
-def init_database(app):
+@pytest.fixture(scope='function')
+def db(app):
     with app.app_context():
-        Base.metadata.create_all(bind=db_session.bind)
-        yield app
-        Base.metadata.drop_all(bind=db_session.bind)
+        Base.metadata.create_all(bind=engine)
+        yield db_session
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture()
+def init_database(db):
+
+    yield db
+
 
 
 @pytest.fixture()
