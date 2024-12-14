@@ -7,6 +7,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from shared import config
 from backend.app.items import bp
+from backend.app.users import bp
 from backend.app.database import db_session, Base
 from shared.extensions import init_extensions
 
@@ -26,8 +27,14 @@ def create_app(config_class=config.Config):
     from backend.app.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
+    from backend.app.users import bp as user_bp
+    app.register_blueprint(user_bp, url_prefix="/users")
+
     from backend.app.home import bp as home_bp
     app.register_blueprint(home_bp)
+
+    from backend.api import bp as api_bp
+    app.register_blueprint(api_bp, url_prefix='/api/items')
 
     admin = Admin(app, name="Minimal Flask-Fullstack-Template")
     admin.add_view(ModelView(User, db_session))

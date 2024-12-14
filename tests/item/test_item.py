@@ -2,6 +2,7 @@ from backend.models.item import Item
 from tests.item.conftest import new_item_in_db
 from backend.app.database import db_session
 
+
 def test_item_repr(new_item_in_db):
     """Test string representation of an item"""
     assert repr(new_item_in_db) == '<Item New Item in DB>'

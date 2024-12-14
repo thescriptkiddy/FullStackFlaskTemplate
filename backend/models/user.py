@@ -2,11 +2,12 @@ import bcrypt
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from flask_security import UserMixin
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from backend.app.database import Base, db_session
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Table
 from pydantic import BaseModel, EmailStr, Field
 
+# todo Refactor to Annotated Declarative Mapping. Use Mapped, mapped_column instead of Column
 roles_users = Table('roles_users', Base.metadata,
                     Column('user_id', Integer(), ForeignKey('users.id')),
                     Column('role_id', Integer(), ForeignKey('roles.id'))
@@ -46,6 +47,7 @@ class User(Base, UserMixin):
     def check_password(self, password: str) -> bool:
         password_bytes = password.encode('utf-8')
         return bcrypt.checkpw(password_bytes, self.password.encode('utf-8'))
+
 
 # DataTransferObject Classes currently not in use!
 

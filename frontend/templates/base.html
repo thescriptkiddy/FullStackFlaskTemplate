@@ -9,33 +9,42 @@
     <title>{% block title %}{% endblock %} - My Webpage</title>
     {% endblock %}
   </head>
-  <body class="d-flex flex-column min-vh-100">
-    <!-- Header -->
-<nav class="navbar navbar-dark bg-dark" aria-label="Dark offcanvas navbar">
+<body>
+  <div class="d-flex flex-column min-vh-100">
+<div class="container-fluid">
+  <!-- Header/Navigation -->
+  <div class="row">
+    <div class="col-12">
+      <header>
+<!-- Header -->
+<nav class="navbar navbar-dark bg-primary" aria-label="Dark offcanvas navbar">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Dark offcanvas navbar</a>
+      <a class="navbar-brand" href="{{ url_for('home.index') }}">Fullstack Flask Application</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbarDark" aria-controls="offcanvasNavbarDark" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasNavbarDark" aria-labelledby="offcanvasNavbarDarkLabel">
         <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="offcanvasNavbarDarkLabel">Offcanvas</h5>
+          <h5 class="offcanvas-title" id="offcanvasNavbarDarkLabel">Admin</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
+              <a class="nav-link active" aria-current="page" href="{{ url_for('home.index') }}">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('items.items_index') }}">Items</a>
             </li>
+             <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('users.users_index') }}">Users</a>
+            </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Dropdown
+                Admin
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" target="_blank" href="{{ url_for('admin.index') }}">Admin</a></li>
+                <li><a class="dropdown-item" target="_blank" href="{{ url_for('admin.index') }}">Flask Admin</a></li>
                 <li><a class="dropdown-item" href="#">Another action</a></li>
                 <li>
                   <hr class="dropdown-divider">
@@ -52,21 +61,31 @@
       </div>
     </div>
   </nav>
-    <!-- Header End  -->
-
-    <!-- Main content -->
-    <div class="container-fluid flex-grow-1">
-      <div class="row">
-
-        <!-- Content area -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-          {% block content %}{% endblock %}
-        </main>
-      </div>
+      </header>
+<!-- Header End  -->
     </div>
-    <!-- Footer area -->
-    <footer class="mt-auto py-3 bg-light">
-      <div class="container">
+  </div>
+  <div class="container">
+  <div class="row ">
+    <div class="col-md-1">
+    <aside>
+      <p>sidebar?</p>
+    </aside>
+    </div>
+    <div class="col-md-11">
+      {% block content %}{% endblock %}
+    </div>
+
+  </div>
+</div>
+
+  <!-- Footer -->
+  <div class="row">
+    <div class="col-12">
+      <footer>
+        <!-- Your footer content here -->
+            <footer class="mt-auto py-3 bg-light">
+      <div class="container-fluid">
         <div class="row">
           <div class="col-md-6 d-flex align-items-center">
             <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
@@ -81,7 +100,11 @@
         </div>
       </div>
     </footer>
-    <!-- Bootstrap JS and Popper.js -->
+      </footer>
+        <!-- Bootstrap JS and Popper.js -->
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-  </body>
-</html>
+    </div>
+  </div>
+</div></div></body></html>
+
+

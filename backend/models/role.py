@@ -8,6 +8,7 @@ from sqlalchemy import Column, Integer, String
 from backend.models.user import roles_users
 
 
+# todo Refactor to Annotated Declarative Mapping. Use Mapped, mapped_column instead of Column
 class Role(Base, RoleMixin):
     __tablename__ = 'roles'
     id = Column(Integer, primary_key=True, autoincrement=True)

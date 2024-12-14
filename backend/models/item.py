@@ -5,6 +5,7 @@ from backend.app.database import Base, db_session
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 
 
+# todo Refactor to Annotated Declarative Mapping. Use Mapped, mapped_column instead of Column
 class Item(Base):
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -15,5 +16,3 @@ class Item(Base):
 
     def __repr__(self):
         return f'<Item {self.title}>'
-
-
