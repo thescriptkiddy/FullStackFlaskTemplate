@@ -1,3 +1,5 @@
+import logging
+
 from flask_cors import CORS
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -7,7 +9,7 @@ from flask_mailman import Mail
 from backend.app.database import db_session
 from backend.models.user import User
 from backend.models.role import Role
-from backend.app.auth.service import load_user
+from backend.utils.helper import load_user
 from backend.app.auth.forms import ExtendedRegisterForm
 
 
@@ -18,6 +20,34 @@ mail = Mail()
 login_manager = LoginManager()
 cors = CORS()
 user_datastore = None
+
+
+def setup_logger(app):
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+
+    # Create a file handler
+    file_handler = logging.FileHandler('app.log')
+    file_handler.setLevel(logging.DEBUG)
+
+    # Create a console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+
+    # Create a formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+
+    # Add the handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    app.logger = logger
+
+
+def init_user_loader(load_user_func):
+    login_manager.user_loader(load_user_func)
 
 
 def init_extensions(app):
@@ -35,4 +65,5 @@ def init_extensions(app):
     bootstrap.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
-    login_manager.user_loader(load_user)
+
+    setup_logger(app)

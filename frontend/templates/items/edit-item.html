@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% from 'bootstrap5/form.html' import render_form %}
 
-{% block title %}Create Item{% endblock %}
+{% block title %}Update Item{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Create New Item</h2>
+    <h2>Update New Item</h2>
     <div class="row">
         <div class="col-md-6">
-            {{ render_form(form, action=url_for('items.create_item'), method='POST') }}
+            {{ render_form(form, action=url_for('items.update_item', uuid_str=item.uuid), method='POST') }}
         </div>
     </div>
 </div>

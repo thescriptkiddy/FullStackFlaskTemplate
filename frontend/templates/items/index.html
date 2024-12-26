@@ -1,42 +1,43 @@
 {% extends "base.html" %}
 {% block title %}Index{% endblock %}
 {% block head %}
-    {{ super() }}
+{{ super() }}
 
 {% endblock %}
 {% block content %}
-<div class="divider"></div>
 <section id="databaseTableContent">
     <div class="container">
         <h1>All items in the Database</h1>
-            <div class="row">
-                <div class="col-sm-12">
+        <div class="row">
+            <div class="col-sm-12">
                 <table class="table table-striped-rows table-hover">
-                  <thead>
+                    <thead>
                     <tr>
-                      <th scope="col">Title</th>
-                      <th scope="col">ID</th>
-                      <th scope="col">Actions</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Actions</th>
                     </tr>
-                  </thead>
-                {% for item in all_items: %}
-                  <tbody>
+                    </thead>
+                    {% for item in all_items: %}
+                    <tbody>
                     <tr>
-                      <td>{{ item.title }}</td>
-                      <td>{{ item.uuid}}</td>
-                      <td>
-                          <a class="icon-link" href="#"><i class="bi bi-trash"></i></a>
-                          <a class="icon-link" href="#" ><i class="bi bi-pen"></i></a>
-
-                      </td>
+                        <td>{{ item.title }}</td>
+                        <td>{{ item.uuid}}</td>
+                        <td><a class="icon-link" href="#" data-uuid="{{ item.uuid }}"
+                               onclick="deleteItem(this); return false;"><i class="bi bi-trash"></i></a>
+                            <a class="icon-link" href="{{ url_for('items.update_item', uuid_str=item.uuid) }}"><i
+                                    class="bi bi-pen"></i></a>
+                        </td>
                     </tr>
-                  </tbody>
-                {% endfor %}
+                    </tbody>
+                    {% endfor %}
                 </table>
                 <div class="d-flex gap-2 justify-content-end mb-4">
-                    <button type="button" class="btn btn-info float-right" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                    Add an item
-                    </button>
+                    <a class="link" href="{{ url_for('items.create_item') }}">
+                        <button type="button" class="btn btn-info float-right">
+                            Add an item
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>

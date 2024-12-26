@@ -10,7 +10,7 @@ class Item(Base):
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, autoincrement=True)
     uuid = Column(UUID(as_uuid=True), unique=True, default=uuid.uuid4)
-    title = Column(String(255), unique=True, nullable=False)
+    title = Column(String(255), nullable=False)
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="items")
 

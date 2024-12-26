@@ -1,14 +1,22 @@
 import pytest
+from flask_security import login_user
 
-from backend import create_app
+from backend import create_app, User
 from backend.app.database import db_session, engine, Base
-from shared.config import Config, DevelopmentConfig
+from shared.config import Config
 
 
 @pytest.fixture(scope='session')
 def app():
     app = create_app()
-    app.config.from_object(DevelopmentConfig)
+    app.config.from_object(Config)  # Load config from your Config class
+    app.config.update({
+        'TESTING': True,
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
+        'WTF_CSRF_ENABLED': False,
+        'SECURITY_CSRF_PROTECT': False,
+    })
+
     return app
 
 
@@ -34,11 +42,3 @@ def init_database(db):
 @pytest.fixture()
 def runner(app):
     return app.test_cli_runner()
-
-
-@pytest.fixture()
-def chrome_options(chrome_options):
-    chrome_options.binary_location = "/usr/local/bin/chromedriver"
-    chrome_options.add_extension('/path/to/extension.crx')
-    chrome_options.add_argument('--kiosk')
-    return chrome_options

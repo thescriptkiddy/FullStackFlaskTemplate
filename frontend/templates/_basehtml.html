@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <title>{% block title %}{% endblock %} - My Webpage</title>
+    {% endblock %}
+</head>
+<body>
+<div class="d-flex flex-column min-vh-100">
+<!-- Header -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary" aria-label="Offcanvas navbar large">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#">Fullstack Flask Application</a>
+    </div>
+</nav>
+<div class="container-fluid flex-grow-1 d-flex flex-column">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <!-- Main Content Area -->
+        <div class="row flex-grow-1">
+            <!-- Sidebar for larger screens -->
+            <aside id="sidebar" class="col-lg-3 d-lg-block bg-body-tertiary p-3 offcanvas-lg offcanvas-start" tabindex="-1">
+                <div class="offcanvas-header d-lg-none">
+                    <h5 class="offcanvas-title">Menu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body d-lg-block">
+                    <ul class='nav nav-pills flex-column mb-auto'>
+                        <li><a href="{{url_for('home.index')}}" class='nav-link active'><i class='bi bi-house'></i> Home</a></li>
+                        <li><a href="{{ url_for('admin.index') }}" class='nav-link' target="_blank"><i class='bi bi-speedometer2'></i> Admin</a></li>
+                        <li><a href="{{url_for('items.items_index')}}" class='nav-link'><i class='bi bi-table'></i> Items</a></li>
+                        <li><a href="{{url_for('users.users_index')}}" class='nav-link'><i class='bi bi-grid'></i> Users</a></li>
+                        <li><a href="{{url_for('auth.auth_index')}}" class='nav-link'><i class='bi bi-person-circle'></i> Authentication</a></li>
+                    </ul>
+                    <!-- User Dropdown -->
+                    <hr />
+                    {% if current_user.is_authenticated %}
+                    <div class='dropdown'>
+                        <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"> <strong>{{current_user.firstname}} {{current_user.lastname}}</strong></i>
+                        </a>
+                        <ul class="dropdown-menu text-small shadow">
+                            <li><a class="dropdown-item" href="#">New project...</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for_security('logout') }}">Logout</a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </aside>
+            <!-- Dynamic Content Area -->
+             <main id='main-content' class='col-12 col-lg-9 ms-sm-auto px-md-4 main-content-padding'>
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+        </div>
+
+
+<!-- Footer -->
+<!-- End of container-fluid -->
+<footer class='mt-auto py-3 bg-light'>
+            <div class='container-fluid'>
+                <div class="row">
+          <div class="col-md-6 d-flex align-items-center">
+            <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
+              <svg class="bi" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
+            </a>
+            <span class="mb-3 mb-md-0 text-body-secondary">© 2024 Simon Hardt</span>
+          </div>
+          <ul class="col-md-6 nav justify-content-end list-unstyled d-flex">
+            <li class="ms-3"><a class="text-body-secondary" href="#"><i class="bi bi-twitter" style="font-size: 24px;"></i></a></li>
+            <li class="ms-3"><a class="text-body-secondary" href="#"><i class="bi bi-linkedin" style="font-size: 24px;"></i></a></li>
+          </ul>
+        </div>
+            </div>
+        </footer>
+</div> <!-- End of flex column -->
+<!-- Bootstrap JS and Popper.js -->
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<!-- JavaScript files -->
+<script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+</body>
+</html>
+

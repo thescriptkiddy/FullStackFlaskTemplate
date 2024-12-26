@@ -1,47 +1,40 @@
 {% extends "base.html" %}
 {% block title %}Users{% endblock %}
 {% block head %}
-    {{ super() }}
+{{ super() }}
 
 {% endblock %}
 {% block content %}
-<div class="divider"></div>
 <section id="databaseTableContent">
     <div class="container">
         <h1>All users in the Database</h1>
-            <div class="row">
-                <div class="col-sm-12">
+        <div class="row">
+            <div class="col-sm-12">
                 <table class="table table-striped-rows table-hover">
-                  <thead>
+                    <thead>
                     <tr>
-                      <th scope="col">Firstname</th>
-                      <th scope="col">Lastname</th>
-                      <th scope="col">Email</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Actions</th>
+                        <th scope="col">Firstname</th>
+                        <th scope="col">Lastname</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
                     </tr>
-                  </thead>
-                {% for user in all_users: %}
-                  <tbody>
+                    </thead>
+                    {% for user in all_users: %}
+                    <tbody>
                     <tr>
-                      <td>{{ user.firstname }}</td>
-                      <td>{{ user.lastname }}</td>
-                      <td>{{ user.email }}</td>
-                      <td>{{ user.active }}</td>
-                      <td>
-                          <a class="icon-link" href="#"><i class="bi bi-trash"></i></a>
-                          <a class="icon-link" href="#" ><i class="bi bi-pen"></i></a>
-
-                      </td>
+                        <td>{{ user.firstname }}</td>
+                        <td>{{ user.lastname }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.active }}</td>
+                        <td>
+                            <a class="icon-link" href="{{ url_for('admin.index')  }}" target="_blank"><i
+                                    class="bi bi-pen"></i></a>
+                        </td>
                     </tr>
-                  </tbody>
-                {% endfor %}
+                    </tbody>
+                    {% endfor %}
                 </table>
-                <div class="d-flex gap-2 justify-content-end mb-4">
-                    <button type="button" class="btn btn-info float-right" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                    Add a user
-                    </button>
-                </div>
             </div>
         </div>
     </div>

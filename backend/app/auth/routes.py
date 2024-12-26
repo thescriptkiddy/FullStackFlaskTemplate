@@ -1,17 +1,11 @@
 from flask import render_template, redirect, request, flash, url_for
 from sqlalchemy import select
+from flask_security import logout_user, url_for_security
 
-from backend import User
+
 from backend.app.auth import bp
-from backend.app.auth.forms import ExtendedRegisterForm
-from backend.app.database import db_session
 
 
 @bp.route("/")
-def index():
-
+def auth_index():
     return render_template("auth/index.html")
-
-
-
-

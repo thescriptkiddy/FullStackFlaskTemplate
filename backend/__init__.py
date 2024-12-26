@@ -1,24 +1,34 @@
+import logging
+
+from backend.utils.helper import load_user
 # from backend.models.role import Role
 from backend.models.user import User
 from backend.models.item import Item
 import click
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, session
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from shared import config
 from backend.app.items import bp
 from backend.app.users import bp
 from backend.app.database import db_session, Base
-from shared.extensions import init_extensions
+from shared.extensions import init_extensions, login_manager
+from backend.utils.helper import register_error_handlers
 
 
 def create_app(config_class=config.Config):
     """Application-Factory-Pattern"""
     app = Flask(__name__, template_folder=config_class.TEMPLATE_FOLDER, static_folder=config_class.STATIC_FOLDER)
     app.config.from_object(config_class)
+    logging.basicConfig(level=logging.DEBUG)
+    logging.getLogger(__name__)
 
     app.teardown_appcontext(lambda exc: db_session.close())
     init_extensions(app)
+    register_error_handlers(app)
+
+    from backend.utils.helper import load_user
+    login_manager.user_loader(load_user)
 
     # Register blueprints here
     from backend.app.items import bp as items_bp
@@ -32,9 +42,6 @@ def create_app(config_class=config.Config):
 
     from backend.app.home import bp as home_bp
     app.register_blueprint(home_bp)
-
-    from backend.api import bp as api_bp
-    app.register_blueprint(api_bp, url_prefix='/api/items')
 
     admin = Admin(app, name="Minimal Flask-Fullstack-Template")
     admin.add_view(ModelView(User, db_session))
