@@ -1,7 +1,7 @@
 import pytest
 from backend.models.user import User
 from flask_security import login_user
-from backend.app.database import db_session
+from shared.database import db_session
 
 
 @pytest.fixture

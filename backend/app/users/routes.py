@@ -1,7 +1,7 @@
 from flask import render_template
 from flask_security import login_required
 from sqlalchemy import select
-from backend.app.database import db_session
+from shared.database import db_session
 from backend.app.users import bp
 from backend.models.user import User
 
@@ -23,4 +23,3 @@ def load_user_profile_by_id(fs_uniquifier):
     fetch_user_by_id = db_session.query(User).filter(User.fs_uniquifier == fs_uniquifier).first()
 
     return render_template("users/profile.html", user=fetch_user_by_id)
-

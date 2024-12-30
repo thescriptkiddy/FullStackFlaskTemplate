@@ -1,9 +1,8 @@
-import uuid
 import pytest
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from backend.models.user import User
-from backend.app.database import db_session
+from shared.database import db_session
 from flask_security.utils import hash_password
 from tests.conftest import get_db
 from tests.unit.user.conftest import get_test_user

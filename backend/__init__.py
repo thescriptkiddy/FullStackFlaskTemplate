@@ -5,13 +5,13 @@ from backend.utils.helper import load_user
 from backend.models.user import User
 from backend.models.item import Item
 import click
-from flask import Flask, render_template, redirect, url_for, session
+from flask import Flask, render_template, redirect, url_for
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from shared import config
 from backend.app.items import bp
 from backend.app.users import bp
-from backend.app.database import db_session, Base
+from shared.database import db_session, Base
 from shared.extensions import init_extensions, login_manager
 from backend.utils.helper import register_error_handlers
 
@@ -62,5 +62,3 @@ def create_app(config_class=config.Config):
         return render_template("factory-pattern.html")
 
     return app
-
-

@@ -1,8 +1,8 @@
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from backend.app.database import Base, db_session
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from shared.database import Base
+from sqlalchemy import Column, Integer, String, ForeignKey
 
 
 # todo Refactor to Annotated Declarative Mapping. Use Mapped, mapped_column instead of Column

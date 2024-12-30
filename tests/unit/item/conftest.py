@@ -1,6 +1,6 @@
 import pytest
 from backend.models.item import Item
-from backend.app.database import db_session
+from shared.database import db_session
 
 
 @pytest.fixture

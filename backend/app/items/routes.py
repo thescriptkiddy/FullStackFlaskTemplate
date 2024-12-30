@@ -1,11 +1,10 @@
-import os.path
 from uuid import UUID
 
 from flask import render_template, url_for, request, redirect, jsonify, flash
 from flask_security import login_required
 from sqlalchemy import select
 from backend.utils.helper import handle_sql_exceptions
-from backend.app.database import db_session
+from shared.database import db_session
 from backend.models.item import Item
 from backend.app.items import bp
 from backend.app.items.forms import CreateItemForm, UpdateItemForm
@@ -90,4 +89,3 @@ def delete_item_by_id(uuid_str):
         return jsonify({"status": "success", "message": "Item successfully deleted"}), 200
     else:
         return jsonify({"status": "error", "message": "Item not found"}), 404
-

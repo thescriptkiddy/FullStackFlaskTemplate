@@ -1,14 +1,10 @@
-import bcrypt
 import uuid
 
-from argon2.exceptions import VerifyMismatchError
 from sqlalchemy.dialects.postgresql import UUID
 from flask_security import UserMixin
-from sqlalchemy.orm import relationship, Mapped, mapped_column, Session
-from backend.app.database import Base, db_session
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Table, event
-from pydantic import BaseModel, EmailStr, Field
-from argon2 import PasswordHasher
+from sqlalchemy.orm import relationship
+from shared.database import Base
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Table
 
 # todo Refactor to Annotated Declarative Mapping. Use Mapped, mapped_column instead of Column
 roles_users = Table('roles_users', Base.metadata,

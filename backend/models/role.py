@@ -1,9 +1,8 @@
-from flask_security.models import sqla as sqla
 from flask_security import RoleMixin
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from backend.app.database import Base
+from shared.database import Base
 from sqlalchemy import Column, Integer, String
 from backend.models.user import roles_users
 

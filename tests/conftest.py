@@ -4,13 +4,11 @@ import time
 import pytest
 from flask_security import hash_password
 from playwright.sync_api import Playwright, Page, Browser, BrowserContext
-from sqlalchemy.exc import IntegrityError
 
 from backend import create_app
 from backend.models.user import User
-from backend.app.database import db_session, engine, Base
+from shared.database import db_session, engine, Base
 from shared.config import TestingConfig
-from tests.unit.user.conftest import get_test_user
 
 
 @pytest.fixture(scope='session')
