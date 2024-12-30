@@ -1,5 +1,4 @@
 from backend import db_session
-from tests.item.conftest import new_item_in_db
 
 
 def test_item_repr(new_item_in_db):

@@ -1,10 +1,8 @@
-import re
-import time
-from playwright.sync_api import Page, expect, Playwright
-from tests.e2e.conftest import setup_flask_server, page
+from playwright.sync_api import Page
+from tests.conftest import flask_server
 
 
-def test_registration_within_content_area(page: Page, setup_flask_server) -> None:
+def test_registration_within_content_area(page: Page, flask_server) -> None:
     """
     GIVEN A visitor wants to create an account
     WHEN the visitor provides a valid email address and password

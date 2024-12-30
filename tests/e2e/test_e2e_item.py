@@ -1,8 +1,4 @@
-import re
-import time
-
-from tests.e2e.conftest import setup_flask_server, page, authenticated_page
-from playwright.sync_api import Page, expect, Playwright
+from playwright.sync_api import Page, expect
 
 
 def test_e2e_create_item(authenticated_page: Page):

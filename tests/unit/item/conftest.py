@@ -4,7 +4,7 @@ from backend.app.database import db_session
 
 
 @pytest.fixture
-def new_item_in_db(init_database):
+def new_item_in_db(get_db):
     """Fixture for new item in database"""
     new_item = Item(
         title="New Item in DB",
