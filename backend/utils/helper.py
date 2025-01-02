@@ -6,6 +6,7 @@ from functools import wraps
 
 def handle_sql_exceptions(func):
     """Decorator to handle common SQL Exceptions """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
@@ -42,8 +43,3 @@ def load_user(user_id):
     user = user_datastore.find_user(fs_uniquifier=user_id)
     print(f"User found: {user}")
     return user
-
-
-def get_menu_items():
-    menu_items = []
-    pass
