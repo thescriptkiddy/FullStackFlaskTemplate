@@ -16,3 +16,13 @@ def test_e2e_create_item(authenticated_page: Page):
     authenticated_page.wait_for_load_state("domcontentloaded")
     expect(authenticated_page).to_have_url("http://127.0.0.1:5000/items/")
     authenticated_page.get_by_text("New Item E2E").click()
+
+
+def test_item_view_with_authentication(authenticated_page: Page):
+    """
+    GIVEN An authenticated user
+    WHEN views the items overview page
+    THEN can the table view
+    """
+    authenticated_page.goto("http://127.0.0.1:5000/items/")
+    authenticated_page.get_by_text("All items in the Database").click()

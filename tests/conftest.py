@@ -27,6 +27,15 @@ def get_db(app):
         Base.metadata.drop_all(bind=engine)
 
 
+@pytest.fixture(scope="function")
+def test_user(get_db):
+    """Fixture create a test user for unit tests"""
+    test_user = User(email="unittest@testuser.com", firstname="Unit", lastname="Test")
+    get_db.add(test_user)
+    get_db.commit()
+    return test_user
+
+
 @pytest.fixture(scope="session", autouse=True)
 def flask_server():
     """App Factory Pattern for Testing"""
