@@ -1,6 +1,8 @@
+import pytest
+import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 from backend import db_session
 from backend.models.item import Item
-from tests.conftest import authenticated_page
 from tests.conftest import test_user
 
 
@@ -12,9 +14,11 @@ def test_item_repr(new_item_in_db):
 def test_create_item(new_item_in_db, test_user):
     """Tests if an item has been added into the database"""
     assert new_item_in_db is not None
+    assert new_item_in_db.id is not None
+    assert new_item_in_db.uuid is not None
+    assert new_item_in_db.title is not None and new_item_in_db.title != ""
     assert new_item_in_db.title == "New Item in DB"
     assert new_item_in_db.owner_id == test_user.id
-    assert new_item_in_db.uuid is not None
 
 
 def test_read_item(new_item_in_db):
@@ -44,7 +48,7 @@ def test_delete_item(new_item_in_db):
     assert deleted_item is None
 
 
-def test_item_relationship(new_item_in_db, test_user):
+def test_item_relationship_with_user(new_item_in_db, test_user):
     assert new_item_in_db.owner == test_user
     assert new_item_in_db in test_user.items
 

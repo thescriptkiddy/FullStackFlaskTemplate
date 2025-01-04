@@ -23,10 +23,14 @@
                     <tr>
                         <td>{{ item.title }}</td>
                         <td>{{ item.uuid}}</td>
-                        <td><a class="icon-link" href="#" data-uuid="{{ item.uuid }}"
-                               onclick="deleteItem(this); return false;"><i class="bi bi-trash"></i></a>
-                            <a class="icon-link" href="{{ url_for('items.update_item', uuid_str=item.uuid) }}"><i
-                                    class="bi bi-pen"></i></a>
+                        <td>
+                            <button name="delete-item" class="btn btn-link" data-uuid="{{ item.uuid }}"
+                                    onclick="deleteItem(this); return false;"><i
+                                    class="bi bi-trash"></i></button>
+
+                            <button class="btn btn-link"><a class="icon-link"
+                                                            href="{{ url_for('items.update_item', uuid_str=item.uuid) }}"><i
+                                    class="bi bi-pen"></i></a></button>
                         </td>
                     </tr>
                     </tbody>

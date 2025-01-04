@@ -1,4 +1,5 @@
 from playwright.sync_api import Page, expect
+import asyncio
 
 
 def test_e2e_create_item(authenticated_page: Page):
@@ -26,3 +27,16 @@ def test_item_view_with_authentication(authenticated_page: Page):
     """
     authenticated_page.goto("http://127.0.0.1:5000/items/")
     authenticated_page.get_by_text("All items in the Database").click()
+
+
+def test_e2e_delete_item(authenticated_page: Page):
+    """
+    GIVEN An authenticated user
+    WHEN deletes an item
+    THEN it should not be visible anymore
+    """
+    authenticated_page.goto("http://127.0.0.1:5000/items/")
+    authenticated_page.wait_for_selector("button[name=\"delete-item\"]")
+    authenticated_page.on("dialog", lambda dialog: dialog.accept())
+    authenticated_page.locator('button[name="delete-item"] i.bi.bi-trash').first.click()
+    authenticated_page.get_by_text("Item successfully deleted").click()
