@@ -2,7 +2,7 @@ from playwright.sync_api import Page
 from tests.conftest import flask_server
 
 
-def test_registration_within_content_area(page: Page, flask_server) -> None:
+def test_registration_within_content_area(page: Page, flask_server, test_constants) -> None:
     """
     GIVEN A visitor wants to create an account
     WHEN the visitor provides a valid email address and password
@@ -12,7 +12,7 @@ def test_registration_within_content_area(page: Page, flask_server) -> None:
     :param setup_flask_server:
     :return:
     """
-    page.goto("http://127.0.0.1:5000/home/")
+    page.goto(test_constants["BASE_URL"])
     page.get_by_role("button", name="Register").click()
     page.get_by_label("Email Address").click()
     page.get_by_label("Email Address").fill("simon333@simon.de")

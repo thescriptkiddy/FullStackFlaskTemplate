@@ -10,6 +10,28 @@ from backend.models.user import User
 from shared.database import db_session, engine, Base
 from shared.config import TestingConfig
 
+# Constants
+BASE_URL = "http://127.0.0.1:5000"
+ITEMS_PAGE = f"{BASE_URL}/items/"
+USER_PAGE = f"{BASE_URL}/users/"
+DELETE_BUTTON_SELECTOR = 'button[name="delete-item"] i.bi.bi-trash'
+EDIT_BUTTON_SELECTOR = ""
+SUCCESS_MESSAGE_SELECTOR = '.alert-success'
+ERROR_MESSAGE_SELECTOR = '.alert-error'
+
+
+@pytest.fixture(scope="session")
+def test_constants():
+    return {
+        "BASE_URL": BASE_URL,
+        "ITEMS_PAGE": ITEMS_PAGE,
+        "USER_PAGE": USER_PAGE,
+        "DELETE_BUTTON_SELECTOR": DELETE_BUTTON_SELECTOR,
+        "EDIT_BUTTON_SELECTOR": EDIT_BUTTON_SELECTOR,
+        "SUCCESS_MESSAGE_SELECTOR": SUCCESS_MESSAGE_SELECTOR,
+        "ERROR_MESSAGE_SELECTOR": ERROR_MESSAGE_SELECTOR,
+    }
+
 
 @pytest.fixture(scope='session')
 def app():
