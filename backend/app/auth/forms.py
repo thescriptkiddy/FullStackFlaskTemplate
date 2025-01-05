@@ -5,8 +5,8 @@ from wtforms.validators import DataRequired, EqualTo, InputRequired
 
 
 class ExtendedRegisterForm(RegisterForm):
-    firstname = StringField('First Name', [DataRequired()])
-    lastname = StringField('Last Name', [DataRequired()])
+    firstname = StringField('First Name')
+    lastname = StringField('Last Name')
     submit = SubmitField()
 
 

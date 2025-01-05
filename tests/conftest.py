@@ -1,5 +1,6 @@
 import subprocess
 import time
+import uuid
 
 import pytest
 from flask_security import hash_password
@@ -12,6 +13,9 @@ from shared.config import TestingConfig
 
 # Constants
 BASE_URL = "http://127.0.0.1:5000"
+REGISTRATION_URL = f"{BASE_URL}/register"
+LOGIN_URL = f"{BASE_URL}/login"
+TEST_PASSWORD = "12345678"
 ITEMS_PAGE = f"{BASE_URL}/items/"
 USER_PAGE = f"{BASE_URL}/users/"
 DELETE_BUTTON_SELECTOR = 'button[name="delete-item"] i.bi.bi-trash'
@@ -19,11 +23,22 @@ EDIT_BUTTON_SELECTOR = ""
 SUCCESS_MESSAGE_SELECTOR = '.alert-success'
 ERROR_MESSAGE_SELECTOR = '.alert-error'
 
+test_email = f"registration-test-{uuid.uuid4()}@example.com"
+
+
+@pytest.fixture()
+def generate_test_email(request):
+    prefix = getattr(request.node, "prefix", "test")
+    return f"{prefix}-{uuid.uuid4()}@example.com"
+
 
 @pytest.fixture(scope="session")
 def test_constants():
     return {
         "BASE_URL": BASE_URL,
+        "REGISTRATION_URL": REGISTRATION_URL,
+        "LOGIN_URL": LOGIN_URL,
+        "TEST_PASSWORD": TEST_PASSWORD,
         "ITEMS_PAGE": ITEMS_PAGE,
         "USER_PAGE": USER_PAGE,
         "DELETE_BUTTON_SELECTOR": DELETE_BUTTON_SELECTOR,

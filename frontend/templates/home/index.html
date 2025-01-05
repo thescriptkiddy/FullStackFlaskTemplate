@@ -8,7 +8,7 @@
     <img class="d-block mx-auto mb-4" src="{{ url_for('static', filename='assets/images/icons-hero@2x.png') }}" alt=""
          width="72" height="57">
     {% if current_user.is_authenticated %}
-    <h1 class="display-5 fw-bold text-body-emphasis">{{ current_user.firstname }} {{ current_user.lastname
+    <h1 class="display-5 fw-bold text-body-emphasis">Welcome {{ current_user.firstname }} {{ current_user.lastname
         }}</h1>
     {% endif %}
     <div class="col-lg-6 mx-auto">

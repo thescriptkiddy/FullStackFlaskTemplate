@@ -37,16 +37,18 @@ def test_e2e_delete_item(authenticated_page: Page, test_constants):
     """
     authenticated_page.goto(test_constants["ITEMS_PAGE"])
     authenticated_page.wait_for_selector(test_constants["DELETE_BUTTON_SELECTOR"])
+    # Handle to JS-Popup
     authenticated_page.on("dialog", lambda dialog: dialog.accept())
 
-    # initial_item_count = authenticated_page.locator('button[name="delete-item"]').count()
     initial_item_count = authenticated_page.locator(test_constants["DELETE_BUTTON_SELECTOR"]).count()
 
     authenticated_page.locator(test_constants["DELETE_BUTTON_SELECTOR"]).first.click()
     authenticated_page.wait_for_load_state('networkidle')
 
+    # Take care that the alerts are visible
     success_message = authenticated_page.locator(test_constants["SUCCESS_MESSAGE_SELECTOR"])
     expect(success_message).to_be_visible()
     expect(success_message).to_contain_text("Item successfully deleted")
 
+    # Verify that just one (1) item has been deleted
     expect(authenticated_page.locator('button[name="delete-item"]')).to_have_count(initial_item_count - 1)

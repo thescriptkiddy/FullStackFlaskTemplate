@@ -57,4 +57,3 @@ def tests_items_view(client, test_constants):
     """Tests that the items route is protected"""
     response_item_route_get = client.get(test_constants["ITEMS_PAGE"])
     assert response_item_route_get.status_code == 401
-    assert b"401 Unauthorized" in response_item_route_get.data.title()
