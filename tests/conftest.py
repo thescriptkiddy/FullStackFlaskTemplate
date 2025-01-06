@@ -1,7 +1,7 @@
 import subprocess
 import time
 import uuid
-
+import secrets
 import pytest
 from flask_security import hash_password
 from playwright.sync_api import Playwright, Page, Browser, BrowserContext
@@ -16,6 +16,7 @@ BASE_URL = "http://127.0.0.1:5000"
 REGISTRATION_URL = f"{BASE_URL}/register"
 LOGIN_URL = f"{BASE_URL}/login"
 TEST_PASSWORD = "12345678"
+TEST_PASSWORD_6 = "kHud45"
 ITEMS_PAGE = f"{BASE_URL}/items/"
 USER_PAGE = f"{BASE_URL}/users/"
 DELETE_BUTTON_SELECTOR = 'button[name="delete-item"] i.bi.bi-trash'
@@ -27,18 +28,26 @@ test_email = f"registration-test-{uuid.uuid4()}@example.com"
 
 
 @pytest.fixture()
+def generate_test_password(length):
+    pass
+
+
+@pytest.fixture()
 def generate_test_email(request):
+    """Generates unique email addresses for testing"""
     prefix = getattr(request.node, "prefix", "test")
     return f"{prefix}-{uuid.uuid4()}@example.com"
 
 
 @pytest.fixture(scope="session")
 def test_constants():
+    """Testing constants"""
     return {
         "BASE_URL": BASE_URL,
         "REGISTRATION_URL": REGISTRATION_URL,
         "LOGIN_URL": LOGIN_URL,
         "TEST_PASSWORD": TEST_PASSWORD,
+        "TEST_PASSWORD_6": TEST_PASSWORD_6,
         "ITEMS_PAGE": ITEMS_PAGE,
         "USER_PAGE": USER_PAGE,
         "DELETE_BUTTON_SELECTOR": DELETE_BUTTON_SELECTOR,
@@ -48,8 +57,28 @@ def test_constants():
     }
 
 
+@pytest.fixture(scope="session")
+def user_exists_in_db():
+    def _user_exists(email):
+        return db_session.query(User).filter_by(email=email).first() is not None
+
+    return _user_exists
+
+
+@pytest.fixture(scope="session")
+def remove_user_from_db():
+    def _remove_user(email):
+        user = db_session.query(User).filter_by(email=email).first()
+        if user:
+            db_session.delete(user)
+            db_session.commit()
+
+    return _remove_user
+
+
 @pytest.fixture(scope='session')
 def app():
+    """Testing factory pattern"""
     app = create_app()
     app.config.from_object(TestingConfig)
     return app
