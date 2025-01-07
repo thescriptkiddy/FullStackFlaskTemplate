@@ -14,7 +14,6 @@ def test_successful_registration_with_all_attributes(page: Page, flask_server, t
     """
     test_email = generate_test_email
     page.goto(test_constants["REGISTRATION_URL"])
-    # page.get_by_role("button", name="Register").click()
     page.get_by_label("Email Address").fill(test_email)
     page.get_by_label("Password", exact=True).fill(test_constants["TEST_PASSWORD"])
     page.get_by_label("Retype Password").fill(test_constants["TEST_PASSWORD"])

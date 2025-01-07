@@ -69,9 +69,11 @@
                         </ul>
                     </div>
                     {% else %}
-                    <a class="dropdown-item" href="{{ url_for_security('login') }}"><i
+                    <a class="dropdown-item" id="sidebar-login" data-testid="sidebar-login"
+                       href="{{ url_for_security('login') }}"><i
                             class="bi bi-box-arrow-in-right"></i> Login</a>
-                    <a class="dropdown-item" href="{{ url_for_security('register') }}"><i
+                    <a class="dropdown-item" id="sidebar-register"
+                       href="{{ url_for_security('register') }}"><i
                             class="bi bi-box-arrow-in-right"></i> Register</a>
                     {% endif %}
                 </div>
