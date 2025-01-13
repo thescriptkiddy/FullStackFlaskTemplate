@@ -133,13 +133,16 @@ class TestingConfig(Config):
     SECURITY_REGISTERABLE = True
     SECURITY_PASSWORD_HASH = 'argon2'
     SECURITY_RECOVERABLE = True
+    SECURITY_FORGOT_PASSWORD_TEMPLATE = "security/forgot_password.html"
+    SECURITY_RESET_PASSWORD_TEMPLATE = "security/reset_password.html"
     SECURITY_CHANGEABLE = True
     SECURITY_DEFAULT_REMEMBER_ME = True
     SECURITY_REMEMBER_ME = True
     SECURITY_REMEMBER_ME_DURATION = timedelta(days=30)
     SECURITY_CHANGE_URL = '/change'
     SECURITY_POST_CHANGE_VIEW = '/profile'
-    SECURITY_POST_LOGIN_VIEW = 'home.index'
+    SECURITY_POST_LOGIN_VIEW = '/home.index'
+    SECURITY_POST_RESET_VIEW = 'security.login'
     SECURITY_CHANGE_EMAIL = True
     # SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True

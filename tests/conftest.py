@@ -1,8 +1,10 @@
+import os
 import subprocess
 import time
 import uuid
 import secrets
 import pytest
+from dotenv import load_dotenv
 from flask_security import hash_password
 from playwright.sync_api import Playwright, Page, Browser, BrowserContext
 
@@ -11,8 +13,10 @@ from backend.models.user import User
 from shared.database import db_session, engine, Base
 from shared.config import TestingConfig
 
+load_dotenv()
+
 # Constants
-BASE_URL = "http://127.0.0.1:5000"
+BASE_URL = os.getenv("BASE_URL")
 REGISTRATION_URL = f"{BASE_URL}/register"
 LOGIN_URL = f"{BASE_URL}/login"
 TEST_PASSWORD = "12345678"

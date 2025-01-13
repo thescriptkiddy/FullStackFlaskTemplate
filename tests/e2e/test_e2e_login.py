@@ -64,5 +64,3 @@ def test_failed_login_with_wrong_password(flask_server, page: Page, test_constan
     page.get_by_role("button", name="Login").click()
     error_message = page.locator("text=Invalid password")
     expect(error_message).to_be_visible()
-
-# TODO Add test remember me functionality
