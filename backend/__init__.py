@@ -11,6 +11,7 @@ from flask_admin.contrib.sqla import ModelView
 from shared import config
 from backend.app.items import bp
 from backend.app.users import bp
+from backend.app.menu import bp
 from shared.database import db_session, Base
 from shared.extensions import init_extensions, login_manager
 from backend.utils.helper import register_error_handlers
@@ -31,17 +32,20 @@ def create_app(config_class=config.Config):
     login_manager.user_loader(load_user)
 
     # Register blueprints here
-    from backend.app.items import bp as items_bp
-    app.register_blueprint(items_bp, url_prefix="/items")
-
     from backend.app.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
-    from backend.app.users import bp as user_bp
-    app.register_blueprint(user_bp, url_prefix="/users")
-
     from backend.app.home import bp as home_bp
     app.register_blueprint(home_bp)
+
+    from backend.app.items import bp as items_bp
+    app.register_blueprint(items_bp, url_prefix="/items")
+
+    from backend.app.menu import bp as menu_bp
+    app.register_blueprint(menu_bp)
+
+    from backend.app.users import bp as user_bp
+    app.register_blueprint(user_bp, url_prefix="/users")
 
     admin = Admin(app, name="Minimal Flask-Fullstack-Template")
     admin.add_view(ModelView(User, db_session))

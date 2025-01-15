@@ -22,6 +22,7 @@ def items_index():
 
     if message:
         flash(message, category)
+
     return render_template('items/index.html', all_items=all_items)
 
 
