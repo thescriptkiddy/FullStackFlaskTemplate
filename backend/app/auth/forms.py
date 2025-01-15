@@ -8,9 +8,3 @@ class ExtendedRegisterForm(RegisterForm):
     firstname = StringField('First Name')
     lastname = StringField('Last Name')
     submit = SubmitField()
-
-# class ResetPasswordForm(ChangePasswordForm):
-#    password = PasswordField("New Password", validators=[DataRequired()])
-#    password2 = PasswordField(
-#        "Repeat Password", validators=[DataRequired(), EqualTo("password")])
-#    submit = SubmitField("Confirm Password Reset")

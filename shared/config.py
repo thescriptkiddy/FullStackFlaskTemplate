@@ -122,7 +122,6 @@ class TestingConfig(Config):
     DEBUG = os.environ.get('DEBUG', 'False') == 'True'
     SECRET_KEY = os.environ.get('FLASK_KEY')
     # Database Configurations
-    # SQLALCHEMY_DATABASE_URI = os.environ.get('DB_URI')
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -132,18 +131,27 @@ class TestingConfig(Config):
     SECURITY_EMAIL_VALIDATOR_ARGS = {"check_deliverability": False}
     SECURITY_REGISTERABLE = True
     SECURITY_PASSWORD_HASH = 'argon2'
+
+    # Changeable
+    SECURITY_CHANGEABLE = True
+    SECURITY_CHANGE_URL = '/change'
+    SECURITY_CHANGE_PASSWORD_TEMPLATE = 'security/change_password.html'
+    SECURITY_CHANGE_EMAIL = True
+
+    # Recoverable
     SECURITY_RECOVERABLE = True
     SECURITY_FORGOT_PASSWORD_TEMPLATE = "security/forgot_password.html"
     SECURITY_RESET_PASSWORD_TEMPLATE = "security/reset_password.html"
-    SECURITY_CHANGEABLE = True
+
+    # Remember Me
     SECURITY_DEFAULT_REMEMBER_ME = True
     SECURITY_REMEMBER_ME = True
     SECURITY_REMEMBER_ME_DURATION = timedelta(days=30)
-    SECURITY_CHANGE_URL = '/change'
+
     SECURITY_POST_CHANGE_VIEW = '/profile'
     SECURITY_POST_LOGIN_VIEW = '/home.index'
     SECURITY_POST_RESET_VIEW = 'security.login'
-    SECURITY_CHANGE_EMAIL = True
+
     # SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
     PERMANENT_SESSION_LIFETIME = timedelta(days=30)

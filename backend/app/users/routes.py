@@ -1,9 +1,10 @@
 from flask import render_template
-from flask_security import login_required
+from flask_security import login_required, url_for_security
 from sqlalchemy import select
 from shared.database import db_session
 from backend.app.users import bp
 from backend.models.user import User
+from backend.app.auth.forms import ChangePasswordForm
 
 
 @bp.route('/')
@@ -15,7 +16,19 @@ def users_index():
     return render_template('users/index.html', all_users=all_users)
 
 
-# Temporary route for testing. It transfers a complete user object
+# Only for testing the change form from flask security
+@bp.route('/change-password')
+@login_required
+def change_password_by_user():
+    form = ChangePasswordForm()
+
+    return render_template("security/change_password.html", form=form)
+
+
+@bp.route('/edit-profile/<string:fs_uniquifier>')
+def edit_user_profile(fs_uniquifier):
+    return render_template("user/edit_profile.html")
+
 
 @bp.route('/profile/<string:fs_uniquifier>', methods=["GET"])
 @login_required
