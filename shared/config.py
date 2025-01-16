@@ -9,6 +9,7 @@ load_dotenv()
 
 class Config:
     """Default Config Settings with env variables"""
+    BASE_URL = "http://127.0.0.1:5000"
     DEBUG = os.environ.get('DEBUG', 'False') == 'True'
     SECRET_KEY = os.environ.get('FLASK_KEY')
     # Database Configurations
@@ -119,6 +120,7 @@ class ProductionConfig(Config):
 
 class TestingConfig(Config):
     """Config for Testing"""
+    BASE_URL = "http://127.0.0.1:5000"
     DEBUG = os.environ.get('DEBUG', 'False') == 'True'
     SECRET_KEY = os.environ.get('FLASK_KEY')
     # Database Configurations

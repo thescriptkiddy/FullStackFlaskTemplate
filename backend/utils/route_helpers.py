@@ -1,4 +1,8 @@
+from pprint import pprint
+
 from flask import current_app, url_for
+from werkzeug.routing import BuildError
+from urllib.parse import unquote
 
 
 def has_no_empty_params(rule):
@@ -10,22 +14,23 @@ def has_no_empty_params(rule):
 
 
 # TODO Refactor to allow filtering yes or no
-def generate_sitemap():
+def generate_route_map(include_params=True):
     """Generates a list of dictionaries with all existing urls and metadata such as url, endpoint, methods and
     defaults"""
     routes = []
 
     for rule in current_app.url_map.iter_rules():
-        if "GET" in rule.methods and has_no_empty_params(rule):
+        if "GET" in rule.methods and (include_params or has_no_empty_params(rule)):
             try:
-                url = url_for(rule.endpoint, **(rule.defaults or {}))
+                url = url_for(rule.endpoint, **{arg: f"<{arg}>" for arg in rule.arguments})
                 entry = {
-                    'url': url,
+                    'url': unquote(url),
                     'endpoint': rule.endpoint,
                     'methods': list(rule.methods),
                     'defaults': rule.defaults
                 }
                 routes.append(entry)
-            except Exception as e:
-                print("error}")
+            except BuildError as e:
+                print(f"Could not build URL for {rule.endpoint}: {str(e)}")
+    
     return routes
