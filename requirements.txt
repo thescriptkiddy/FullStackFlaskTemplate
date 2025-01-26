@@ -22,3 +22,5 @@ python-dotenv~=1.0.1
 pydantic~=2.10.3
 starlette~=0.42.0
 playwright~=1.49.1
+
+beautifulsoup4~=4.12.3

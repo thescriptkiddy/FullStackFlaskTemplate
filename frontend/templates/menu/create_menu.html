@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+
+{% block title %}Menu{% endblock %}
+
+{% block content %}
+
+<h1>Welcome to Create a new Menu</h1>
+<p>This is the main content area.</p>
+{{ render_form(create_menu_form, action=url_for('menu.create_menu'), method='POST') }}
+
+{% endblock %}

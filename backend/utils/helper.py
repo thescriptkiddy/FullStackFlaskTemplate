@@ -1,4 +1,4 @@
-from flask import jsonify, render_template
+from flask import jsonify, render_template, current_app
 from sqlalchemy.exc import DataError, IntegrityError, OperationalError, SQLAlchemyError
 import logging
 from functools import wraps
