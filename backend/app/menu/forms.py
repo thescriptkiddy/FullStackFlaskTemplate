@@ -24,3 +24,8 @@ class UpdateMenuForm(FlaskForm):
         super(UpdateMenuForm, self).__init__(*args, **kwargs)
         self.all_links = kwargs.pop('all_links', [])
         self.links.choices = [(link.id, link.url) for link in self.all_links]
+
+
+class UpdateLinkForm(FlaskForm):
+    name = StringField("Link Name", validators=[DataRequired()])
+    submit = SubmitField("Update Link")
