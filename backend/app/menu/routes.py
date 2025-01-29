@@ -6,7 +6,7 @@ from flask_security import login_required
 from backend.app.menu import bp
 from backend.app.menu.forms import CreateMenuForm, UpdateMenuForm, UpdateLinkForm
 from backend.models.menu import Menu, Link
-from backend.utils.route_helpers import get_all_menu_links, save_all_menu_links_to_database
+from backend.utils.route_helpers import get_all_menu_links, save_all_menu_links_to_database, generate_route_map
 from shared.extensions import db_session
 from flask import flash, redirect, url_for, render_template, request
 from sqlalchemy.orm.exc import NoResultFound
@@ -14,19 +14,9 @@ from sqlalchemy.orm.exc import NoResultFound
 
 @bp.route('/')
 def index():
-    all_menus = Menu.get_all_menus()
-
-    menu_data = []
-    for menu in all_menus:
-        menu_info = {
-            'name': menu.name,
-            'id': menu.id,
-            # Dict comprehension
-            'links': [{'name': link.name, 'url': link.url} for link in menu.links]
-        }
-        menu_data.append(menu_info)
-
-    return render_template("menu/index.html", menu_data=menu_data, all_menus=all_menus)
+    menu_data = Menu.get_menu_data()
+    print(menu_data)
+    return render_template("menu/index.html", menu_data=menu_data)
 
 
 @bp.route('/edit-menu/<int:menu_id>', methods=["GET", "POST"])
@@ -40,7 +30,7 @@ def update_menu(menu_id):
 
     all_links = db_session.query(Link).all()
     edit_menu = UpdateMenuForm(obj=menu)
-    edit_menu.links.choices = [(str(link.id), link.url) for link in all_links]
+    edit_menu.links.choices = [(str(link.id), link.endpoint) for link in all_links]
 
     if request.method == "POST" and edit_menu.validate_on_submit():
         try:
@@ -71,31 +61,6 @@ def update_menu(menu_id):
     return render_template("menu/edit_menu.html", form=edit_menu, menu=menu, is_editable=True)
 
 
-# OLD CODE for education / comparison still here
-# @bp.route('/edit-menu/<int:menu_id>', methods=["GET", "POST"])
-# def update_menu(menu_id):
-#     fetched_menu = db_session.query(Menu).filter(Menu.id == menu_id).first()
-#     if not fetched_menu:
-#         flash('Menu not found', 'error')
-#         return redirect(url_for('menu.index'))
-#
-#     all_links = db_session.query(Link).all()
-#     form = UpdateMenuForm(obj=fetched_menu, all_links=all_links)
-#
-#     # Links that are already associated with the menu
-#     form.links.data = [link.id for link in fetched_menu.links]
-#
-#     if request.method == "POST" and form.validate_on_submit():
-#         fetched_menu.name = form.name.data
-#
-#         # Create new menu object with the new link objects
-#         db_session.commit()
-#         flash("Menu successfully updated", 'success')
-#         return redirect(url_for('menu.index'))
-#
-#     return render_template("menu/edit_menu.html", form=form, menu=fetched_menu, is_editable=True)
-
-
 @bp.route('/create-menu', methods=["GET", "POST"])
 @login_required
 def create_menu():
@@ -108,7 +73,7 @@ def create_menu():
     if request.method == "POST" and create_menu_form.validate_on_submit():
         print("Form submitted", create_menu_form.data)
         try:
-            selected_links = db_session.query(Link).filter(Link.url.in_(create_menu_form.links.data)).all()
+            selected_links = db_session.query(Link).filter(Link.endpoint.in_(create_menu_form.links.data)).all()
 
             if not selected_links:
                 return jsonify({"error": "No valid links found for selection"}, 400)
@@ -151,3 +116,14 @@ def update_link(link_id):
             return redirect(url_for('menu.index'))  # for testing
 
     return render_template("menu/edit_link.html", form=form, link=link, is_editable=True)
+
+
+@bp.route('/all-routes')
+def all_routes():
+    return generate_route_map()
+
+
+@bp.route('/save-links')
+def save_links():
+    links = save_all_menu_links_to_database()
+    return links

@@ -46,27 +46,28 @@ def generate_route_map(include_params=False):
 
 def get_all_menu_links():
     """Endpoint offers a list of url-links registered in the app"""
-    return [url for url in db_session.execute(select(Link.url)).scalars().all()]
+    return [endpoint for endpoint in db_session.execute(select(Link.endpoint)).scalars().all()]
 
 
 @handle_sql_exceptions
 def save_all_menu_links_to_database():
     """Persists urls to the database based on flasks routing information"""
     # Generate a list of links based on flasks routing
-    links_based_on_routing = set([f"{current_app.config['BASE_URL']}{route['url']}" for route in generate_route_map()])
+    links_based_on_routing = set(
+        [f"{route['endpoint']}" for route in generate_route_map()])
     # Verifies that routing information (link strings) are available
     if not links_based_on_routing:
         return jsonify({"error": "Cannot compare due to missing routing information"}), 400
     # Fetch all links from database
-    persisted_links = set([url for url in db_session.execute(select(Link.url)).scalars().all()])
+    persisted_links = set([endpoint for endpoint in db_session.execute(select(Link.endpoint)).scalars().all()])
     # Create a list of missing links
-    missing_links = list({url for url in links_based_on_routing if url not in persisted_links})
+    missing_links = list({endpoint for endpoint in links_based_on_routing if endpoint not in persisted_links})
     # Save missing links to database
     if missing_links:
         for new_link in missing_links:
             new_link = Link(
                 name=new_link,
-                url=new_link
+                endpoint=new_link
             )
             db_session.add(new_link)
         db_session.commit()

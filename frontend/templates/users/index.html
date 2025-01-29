@@ -28,7 +28,9 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.active }}</td>
                         <td>
-                            <a class="icon-link" href="{{ url_for('admin.index')  }}" target="_blank"><i
+                            <a class="icon-link"
+                               href="{{ url_for('users.edit_user', fs_uniquifier=user.fs_uniquifier)  }}"
+                               target="_blank"><i
                                     class="bi bi-pen"></i></a>
                         </td>
                     </tr>
