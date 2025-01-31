@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+{{ super() }}
+
+{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for item in items: %}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='assets/images/business-meeting-office.jpg')}}"
+                     class="card-img-top" alt="...">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <h4 class="mb-2 line-clamp-1 lh-sm flex-1 me-5">{{ item.title }}</h4>
+                        <div class="hover-actions top-0 end-0 mt-4 me-4">
+                            <button class="btn btn-primary btn-icon flex-shrink-0" data-bs-toggle="modal"
+                                    data-bs-target="#projectsCardViewModal"><span
+                                    class="fa-solid fa-chevron-right"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <span class="badge badge-phoenix fs-10 mb-4 badge-phoenix-success">completed</span>
+                    <div class="d-flex align-items-center mb-2"><span
+                            class="fa-solid fa-user me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
+                        <p class="fw-bold mb-0 text-truncate lh-1">Competition : <span
+                                class="fw-semibold text-primary ms-1"> Umigame GP3</span>
+                        </p>
+                    </div>
+                    <div class="d-flex align-items-center mb-4"><span
+                            class="fa-solid fa-credit-card me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
+                        <p class="fw-bold mb-0 lh-1">Costs : <span class="ms-1 text-body-emphasis">40€</span></p>
+                    </div>
+                    <div class="d-flex justify-content-between text-body-tertiary fw-semibold">
+                        <p class="mb-2"> Seats left</p>
+                        <p class="mb-2 text-body-emphasis">10/25</p>
+                    </div>
+                    <div class="progress bg-success-subtle">
+                        <div class="progress-bar rounded bg-success" role="progressbar" aria-label="Success example"
+                             style="width: 100%"
+                             aria-valuenow="10" aria-valuemin="0" aria-valuemax="25"></div>
+                    </div>
+                    <div class="d-flex align-items-center mt-4">
+                        <p class="mb-0 fw-bold fs-9">Start :<span
+                                class="fw-semibold text-body-tertiary text-opactity-85 ms-1">	17th Nov. 2020</span>
+                        </p>
+                    </div>
+                    <div class="d-flex align-items-center mt-2">
+                        <p class="mb-0 fw-bold fs-9">End : <span
+                                class="fw-semibold text-body-tertiary text-opactity-85 ms-1">	21st May 2028</span>
+                        </p>
+                    </div>
+                    <!-- Avatar Area -->
+
+                    <!-- Avatar Area  End-->
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
