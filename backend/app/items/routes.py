@@ -8,11 +8,13 @@ from shared.database import db_session
 from backend.models.item import Item
 from backend.app.items import bp
 from backend.app.items.forms import CreateItemForm, UpdateItemForm
+from backend.utils.route_helpers import nav_item
 
 
 @bp.route('/')
 @login_required
 @handle_sql_exceptions
+@nav_item(title="Items")
 def items_index():
     result = db_session.execute(select(Item))
     all_items = result.scalars().all()

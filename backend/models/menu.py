@@ -1,9 +1,13 @@
 import uuid
+
+from flask import jsonify
+
 from shared.database import Base, db_session
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Table, select
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from typing import List
 from sqlalchemy.dialects.postgresql import UUID
+from backend.utils.helper import handle_sql_exceptions
 
 menus_links = Table(
     'menus_links',
@@ -17,7 +21,9 @@ class Link(Base):
     __tablename__ = "links"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255), unique=True)
-    endpoint: Mapped[str] = mapped_column(String(255), unique=True)
+    endpoint: Mapped[str] = mapped_column(String(255))
+    title: Mapped[str] = mapped_column(String(255))
+    order: Mapped[int] = mapped_column(Integer)
     menus: Mapped[List['Menu']] = relationship("Menu", secondary=menus_links, back_populates="links")
 
     def __repr__(self):
@@ -35,6 +41,7 @@ class Menu(Base):
         return f'<Menu {self.name}>'
 
     @staticmethod
+    @handle_sql_exceptions
     def get_menu_data():
         all_menus = db_session.execute(select(Menu)).scalars().all()
 
@@ -44,8 +51,21 @@ class Menu(Base):
                 'name': menu.name,
                 'id': menu.id,
                 # Dict comprehension
-                'links': [{'name': link.name, 'url': link.endpoint} for link in menu.links]
+                'links': [{'name': link.name, 'url': link.endpoint, 'title': link.title} for link in menu.links]
+
             }
             menu_data.append(menu_info)
 
         return menu_data
+
+    @staticmethod
+    @handle_sql_exceptions
+    def delete_menu(menu_id):
+        menu = db_session.query(Menu).get(menu_id)
+        if menu:
+            # Clear the relationships
+            menu.links = []
+            # Delete the menu
+            db_session.delete(menu)
+            db_session.commit()
+            return jsonify({"status": "success", "message": "Menu deleted successfully"}), 200

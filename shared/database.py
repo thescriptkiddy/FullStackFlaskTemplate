@@ -23,3 +23,8 @@ db_session = scoped_session(Session)
 
 # Create a base class for declarative models
 Base = sqlalchemy.orm.declarative_base()
+
+
+# For initial database setup
+def init_db():
+    Base.metadata.create_all(bind=engine)

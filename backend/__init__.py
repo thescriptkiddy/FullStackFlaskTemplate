@@ -12,7 +12,7 @@ from shared import config
 from backend.app.items import bp
 from backend.app.users import bp
 from backend.app.menu import bp
-from shared.database import db_session, Base
+from shared.database import db_session, Base, init_db
 from shared.extensions import init_extensions, login_manager
 from backend.utils.helper import register_error_handlers
 
@@ -24,9 +24,13 @@ def create_app(config_class=config.Config):
     logging.basicConfig(level=logging.DEBUG)
     logging.getLogger(__name__)
 
-    app.teardown_appcontext(lambda exc: db_session.close())
     init_extensions(app)
     register_error_handlers(app)
+
+    with app.app_context():
+        init_db()
+
+    app.teardown_appcontext(lambda exc: db_session.close())
 
     from backend.utils.helper import load_user
     login_manager.user_loader(load_user)
@@ -50,6 +54,10 @@ def create_app(config_class=config.Config):
     admin = Admin(app, name="Minimal Flask-Fullstack-Template")
     admin.add_view(ModelView(User, db_session))
     admin.add_view(ModelView(Item, db_session))
+
+    from backend.utils.route_helpers import register_links
+    with app.app_context():
+        register_links(app)
 
     @app.cli.command("init-db")
     def init_db_command():

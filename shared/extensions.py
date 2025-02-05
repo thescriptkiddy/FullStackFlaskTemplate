@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_security import Security, SQLAlchemySessionUserDatastore
 from flask_bootstrap import Bootstrap5
 from flask_mailman import Mail
+
 from shared.database import db_session
 from backend.models.user import User
 from backend.models.role import Role
@@ -49,7 +50,7 @@ def init_user_loader(load_user_func):
 
 
 def init_extensions(app):
-    """Handles all flask extensions. Used my the Application Factory Pattern"""
+    """Handles all flask extensions. Used by the Application Factory Pattern"""
     global user_datastore
     user_datastore = SQLAlchemySessionUserDatastore(db_session, User, Role)
     cors.init_app(app, resources={r"/*": {"origins": app.config.get('CORS_ORIGINS', "*")}},
@@ -63,5 +64,4 @@ def init_extensions(app):
     bootstrap.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
-
     setup_logger(app)

@@ -11,6 +11,9 @@ def handle_sql_exceptions(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
+        except ValueError as err:
+            logging.error("Value error: %s", err)
+            return jsonify({"status": "error", "message": str(err)}), 400
         except DataError as err:
             logging.error("Incorrect data: %s", err)
             return jsonify({"status": "error", "message": "Incorrect data"}), 400

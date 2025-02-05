@@ -22,7 +22,7 @@
             <div class="accordion-body">
                 <ul>
                     {% for link in menu.links %}
-                    <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+                    <li><a href="{{ url_for(link.url) }}">{{ link.title }}</a></li>
                     {% endfor %}
                 </ul>
                 <a href="{{ url_for('menu.update_menu', menu_id=menu.id) }}">

@@ -1,5 +1,6 @@
 from flask import current_app, url_for, jsonify
 from sqlalchemy import select
+from sqlalchemy.orm import query
 from werkzeug.routing import BuildError
 from urllib.parse import unquote
 import os
@@ -7,6 +8,39 @@ from bs4 import BeautifulSoup
 from backend.models.menu import Link
 from shared.database import db_session
 from backend.utils.helper import handle_sql_exceptions
+
+
+# TODO Test link generation and clean-up code
+@handle_sql_exceptions
+def register_links(app):
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint != 'static':
+            view_func = app.view_functions[rule.endpoint]
+            if hasattr(view_func, 'nav_info'):
+                link = db_session.query(Link).filter_by(name=rule.endpoint).first()
+                if not link:
+                    link = Link(
+                        name=rule.endpoint,
+                        endpoint=rule.endpoint,
+                        title=view_func.nav_info.get('title', rule.endpoint),
+                        order=view_func.nav_info.get('order', 0)
+                    )
+                    db_session.add(link)
+    db_session.commit()
+
+
+def nav_item(title=None, order=0):
+    def decorator(func):
+        func.nav_info = {'title': title, 'order': order}
+        return func
+
+    return decorator
+
+
+@handle_sql_exceptions
+def get_all_menu_links():
+    """Endpoint offers a list of url-links registered in the app"""
+    return [title for title in db_session.execute(select(Link.title)).scalars().all()]
 
 
 def get_template_title(template_name):
@@ -24,6 +58,7 @@ def get_template_title(template_name):
     return None
 
 
+@handle_sql_exceptions
 def generate_route_map(include_params=False):
     routes = []
     for rule in current_app.url_map.iter_rules():
@@ -42,11 +77,6 @@ def generate_route_map(include_params=False):
             except BuildError as e:
                 current_app.logger.warning(f"Could not build URL for {rule.endpoint}: {str(e)}")
     return routes
-
-
-def get_all_menu_links():
-    """Endpoint offers a list of url-links registered in the app"""
-    return [endpoint for endpoint in db_session.execute(select(Link.endpoint)).scalars().all()]
 
 
 @handle_sql_exceptions

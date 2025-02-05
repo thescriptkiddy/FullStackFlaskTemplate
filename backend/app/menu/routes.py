@@ -10,9 +10,11 @@ from backend.utils.route_helpers import get_all_menu_links, save_all_menu_links_
 from shared.extensions import db_session
 from flask import flash, redirect, url_for, render_template, request
 from sqlalchemy.orm.exc import NoResultFound
+from backend.utils.route_helpers import nav_item
 
 
 @bp.route('/')
+@nav_item(title="Menu", order=0)
 def index():
     menu_data = Menu.get_menu_data()
     print(menu_data)
@@ -30,7 +32,7 @@ def update_menu(menu_id):
 
     all_links = db_session.query(Link).all()
     edit_menu = UpdateMenuForm(obj=menu)
-    edit_menu.links.choices = [(str(link.id), link.endpoint) for link in all_links]
+    edit_menu.links.choices = [(str(link.id), link.title) for link in all_links]
 
     if request.method == "POST" and edit_menu.validate_on_submit():
         try:
@@ -73,7 +75,7 @@ def create_menu():
     if request.method == "POST" and create_menu_form.validate_on_submit():
         print("Form submitted", create_menu_form.data)
         try:
-            selected_links = db_session.query(Link).filter(Link.endpoint.in_(create_menu_form.links.data)).all()
+            selected_links = db_session.query(Link).filter(Link.title.in_(create_menu_form.links.data)).all()
 
             if not selected_links:
                 return jsonify({"error": "No valid links found for selection"}, 400)
@@ -116,6 +118,12 @@ def update_link(link_id):
             return redirect(url_for('menu.index'))  # for testing
 
     return render_template("menu/edit_link.html", form=form, link=link, is_editable=True)
+
+
+# todo Do i need the ui-route?
+@bp.route('/delete-menu/<int:menu_id>', methods=["DELETE"])
+def delete_menu(menu_id):
+    Menu.delete_menu(menu_id)
 
 
 @bp.route('/all-routes')
