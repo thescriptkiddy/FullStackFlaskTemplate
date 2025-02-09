@@ -6,7 +6,7 @@ from flask_security import login_required
 from backend.app.menu import bp
 from backend.app.menu.forms import CreateMenuForm, UpdateMenuForm, UpdateLinkForm
 from backend.models.menu import Menu, Link
-from backend.utils.route_helpers import get_all_menu_links, save_all_menu_links_to_database, generate_route_map
+from backend.utils.route_helpers import get_all_menu_links, generate_route_map
 from shared.extensions import db_session
 from flask import flash, redirect, url_for, render_template, request
 from sqlalchemy.orm.exc import NoResultFound
@@ -14,10 +14,10 @@ from backend.utils.route_helpers import nav_item
 
 
 @bp.route('/')
-@nav_item(title="Menu", order=0)
+@nav_item(title="Menu", order=1)
 def index():
     menu_data = Menu.get_menu_data()
-    print(menu_data)
+
     return render_template("menu/index.html", menu_data=menu_data)
 
 
@@ -129,9 +129,3 @@ def delete_menu(menu_id):
 @bp.route('/all-routes')
 def all_routes():
     return generate_route_map()
-
-
-@bp.route('/save-links')
-def save_links():
-    links = save_all_menu_links_to_database()
-    return links

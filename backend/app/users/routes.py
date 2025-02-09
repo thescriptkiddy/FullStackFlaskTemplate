@@ -6,9 +6,11 @@ from backend.app.users import bp
 from backend.models.user import User
 from backend.app.users.forms import UpdateUserForm
 from backend.app.auth.forms import ChangePasswordForm
+from backend.utils.route_helpers import nav_item
 
 
 @bp.route('/')
+@nav_item(title="Users", order=3)
 @login_required
 def users_index():
     result = db_session.execute(select(User))

@@ -38,17 +38,13 @@
                 </div>
                 <div class="offcanvas-body d-lg-block">
                     <ul class='nav nav-pills flex-column mb-auto'>
-                        <li><a href="{{url_for('home.index')}}" class='nav-link active'><i class='bi bi-house'></i> Home</a>
+                        {% for link in configured_menu_links: %}
+                        <li><a href="{{ url_for(link.url) }}" class='nav-link'><i class='bi bi-list'></i> {{
+                            link.title }}</a>
                         </li>
-                        <li><a href="{{url_for('items.items_index')}}" class='nav-link'><i class="bi bi-bootstrap"></i>
-                            Items</a>
-                        </li>
-                        <li><a href="{{url_for('users.users_index')}}" class='nav-link'><i class="bi bi-people"></i>
-                            Users</a>
-                        </li>
-                        <li><a href="{{url_for('menu.index') }}" class="nav-link"> <i class="bi bi-menu-app"></i>
-                            Menus</a></li>
+                        {% endfor %}
                     </ul>
+
                     <!-- User Dropdown -->
                     <hr/>
                     {% if current_user.is_authenticated %}

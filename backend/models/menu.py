@@ -42,19 +42,24 @@ class Menu(Base):
 
     @staticmethod
     @handle_sql_exceptions
-    def get_menu_data():
-        all_menus = db_session.execute(select(Menu)).scalars().all()
+    def get_menu_data(**kwargs):
+        query = select(Menu)
+        if 'menu_id' in kwargs:
+            query = query.filter(Menu.id == kwargs['menu_id'])
+
+        menus = db_session.execute(query).scalars().all()
 
         menu_data = []
-        for menu in all_menus:
+        for menu in menus:
             menu_info = {
                 'name': menu.name,
                 'id': menu.id,
-                # Dict comprehension
                 'links': [{'name': link.name, 'url': link.endpoint, 'title': link.title} for link in menu.links]
-
             }
             menu_data.append(menu_info)
+
+        if 'menu_id' in kwargs and menu_data:
+            return menu_data[0]['links']
 
         return menu_data
 

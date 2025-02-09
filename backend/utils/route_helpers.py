@@ -10,7 +10,6 @@ from shared.database import db_session
 from backend.utils.helper import handle_sql_exceptions
 
 
-# TODO Test link generation and clean-up code
 @handle_sql_exceptions
 def register_links(app):
     for rule in app.url_map.iter_rules():
@@ -29,7 +28,7 @@ def register_links(app):
     db_session.commit()
 
 
-def nav_item(title=None, order=0):
+def nav_item(title=None, order=None):
     def decorator(func):
         func.nav_info = {'title': title, 'order': order}
         return func
@@ -77,34 +76,3 @@ def generate_route_map(include_params=False):
             except BuildError as e:
                 current_app.logger.warning(f"Could not build URL for {rule.endpoint}: {str(e)}")
     return routes
-
-
-@handle_sql_exceptions
-def save_all_menu_links_to_database():
-    """Persists urls to the database based on flasks routing information"""
-    # Generate a list of links based on flasks routing
-    links_based_on_routing = set(
-        [f"{route['endpoint']}" for route in generate_route_map()])
-    # Verifies that routing information (link strings) are available
-    if not links_based_on_routing:
-        return jsonify({"error": "Cannot compare due to missing routing information"}), 400
-    # Fetch all links from database
-    persisted_links = set([endpoint for endpoint in db_session.execute(select(Link.endpoint)).scalars().all()])
-    # Create a list of missing links
-    missing_links = list({endpoint for endpoint in links_based_on_routing if endpoint not in persisted_links})
-    # Save missing links to database
-    if missing_links:
-        for new_link in missing_links:
-            new_link = Link(
-                name=new_link,
-                endpoint=new_link
-            )
-            db_session.add(new_link)
-        db_session.commit()
-        return jsonify({
-            "message": f"{len(missing_links)} new links saved successfully",
-            "new_links": missing_links,
-            "all_links": list(links_based_on_routing)
-        }), 200
-
-    return jsonify({"message": "No new links found", "all_links": list(links_based_on_routing)}), 200

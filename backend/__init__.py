@@ -4,6 +4,7 @@ from backend.utils.helper import load_user
 # from backend.models.role import Role
 from backend.models.user import User
 from backend.models.item import Item
+from backend.models.menu import Menu
 import click
 from flask import Flask, render_template, redirect, url_for
 from flask_admin import Admin
@@ -58,6 +59,18 @@ def create_app(config_class=config.Config):
     from backend.utils.route_helpers import register_links
     with app.app_context():
         register_links(app)
+
+    @app.context_processor
+    def inject_menu_items():
+        # Fetch menu items from your database
+        menu_items = Menu.get_menu_data()
+        return dict(menu_items=menu_items)
+
+    @app.context_processor
+    def inject_configured_menu_links():
+        links = Menu.get_menu_data(menu_id=1)
+
+        return dict(configured_menu_links=links)
 
     @app.cli.command("init-db")
     def init_db_command():

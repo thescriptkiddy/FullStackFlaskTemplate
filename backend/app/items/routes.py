@@ -14,7 +14,7 @@ from backend.utils.route_helpers import nav_item
 @bp.route('/')
 @login_required
 @handle_sql_exceptions
-@nav_item(title="Items")
+@nav_item(title="Items", order=2)
 def items_index():
     result = db_session.execute(select(Item))
     all_items = result.scalars().all()

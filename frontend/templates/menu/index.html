@@ -14,7 +14,7 @@
                     data-bs-target="#collapse{{ loop.index }}"
                     aria-expanded="{% if loop.first %}true{% else %}false{% endif %}"
                     aria-controls="collapse{{ loop.index }}">
-                {{ menu.name }}
+                {{ menu.name }} ({{ menu.id }})
             </button>
         </h2>
         <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
@@ -32,6 +32,7 @@
         </div>
     </div>
     {% endfor %}
+
 </div>
 
 
