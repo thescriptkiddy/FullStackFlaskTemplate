@@ -25,9 +25,8 @@
                         <td>{{ item.uuid}}</td>
                         <td>
                             <button name="delete-item" class="btn btn-link" data-uuid="{{ item.uuid }}"
-                                    onclick="deleteItem(this); return false;"><i
+                                    onclick="deleteItem(this, 'items'); return false;"><i
                                     class="bi bi-trash"></i></button>
-
                             <button class="btn btn-link"><a class="icon-link"
                                                             href="{{ url_for('items.update_item', uuid_str=item.uuid) }}"><i
                                     class="bi bi-pen"></i></a></button>

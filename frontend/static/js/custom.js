@@ -1,12 +1,12 @@
-function deleteItem(element) {
+function deleteItem(element, modelName) {
     const uuid = element.getAttribute('data-uuid');
     if (confirm('Are you sure you want to delete this item?')) {
-        fetch(`/items/delete/${uuid}`, { method: 'DELETE' })
+        fetch(`/${modelName}/delete/${uuid}`, { method: 'DELETE' })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
                     // Redirect to the index page with a query parameter
-                    window.location.href = '/items?message=' + encodeURIComponent(data.message) + '&category=success';
+                    window.location.href = `/${modelName}?message=` + encodeURIComponent(data.message) + '&category=success';
                 } else {
                     // Show error message on the current page
                     showAlert(data.message, 'danger');

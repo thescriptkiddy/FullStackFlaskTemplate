@@ -120,10 +120,11 @@ def update_link(link_id):
     return render_template("menu/edit_link.html", form=form, link=link, is_editable=True)
 
 
-# todo Do i need the ui-route?
-@bp.route('/delete-menu/<int:menu_id>', methods=["DELETE"])
+@bp.route('/delete/<int:menu_id>', methods=["DELETE"])
+@login_required
 def delete_menu(menu_id):
-    Menu.delete_menu(menu_id)
+    response, status_code = Menu.delete_menu(menu_id)
+    return response, status_code
 
 
 @bp.route('/all-routes')

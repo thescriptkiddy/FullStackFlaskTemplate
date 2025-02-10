@@ -54,7 +54,8 @@ class Menu(Base):
             menu_info = {
                 'name': menu.name,
                 'id': menu.id,
-                'links': [{'name': link.name, 'url': link.endpoint, 'title': link.title} for link in menu.links]
+                'links': [{'name': link.name, 'url': link.endpoint, 'title': link.title, 'id': link.id} for link in
+                          menu.links]
             }
             menu_data.append(menu_info)
 
@@ -74,3 +75,6 @@ class Menu(Base):
             db_session.delete(menu)
             db_session.commit()
             return jsonify({"status": "success", "message": "Menu deleted successfully"}), 200
+
+        else:
+            return jsonify({"status": "error", "message": "Item not found"}), 404

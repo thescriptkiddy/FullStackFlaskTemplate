@@ -1,8 +1,7 @@
 {% extends "base.html" %}
-
 {% block title %}Menu{% endblock %}
-
 {% block content %}
+
 
 <h1>All menus in the Database</h1>
 <div class="accordion" id="accordionExample">
@@ -22,18 +21,38 @@
             <div class="accordion-body">
                 <ul>
                     {% for link in menu.links %}
-                    <li><a href="{{ url_for(link.url) }}">{{ link.title }}</a></li>
+                    <li><a href="{{ url_for(link.url) }}">{{ link.title }}</a>
+                    </li>
                     {% endfor %}
                 </ul>
-                <a href="{{ url_for('menu.update_menu', menu_id=menu.id) }}">
-                    <button class="btn btn-link"><i class="bi bi-pen"></i></button>
-                </a>
+                <div class="d-flex justify-content-end">
+                    <div class="btn-group" role="group" aria-label="Menu actions">
+                        <a href="{{ url_for('menu.update_menu', menu_id=menu.id) }}"
+                           class="btn btn-outline-primary btn-sm" title="Edit menu">
+                            <i class="bi bi-pen"></i>
+                        </a>
+                        <button type="button" name="delete-menu" class="btn btn-outline-danger btn-sm"
+                                data-uuid="{{ menu.id }}"
+                                onclick="deleteItem(this, 'menu'); return false;" title="Delete menu">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
     {% endfor %}
-
 </div>
+<br>
+<div class="d-flex justify-content-end">
+    <div class="btn-group" role="group" aria-label="Menu actions">
+        <a href="{{ url_for('menu.create_menu') }}"
+           class="btn btn-outline-primary btn-sm" title="Create menu">
+            <i class="bi bi-plus"></i>
+        </a>
 
+    </div>
+</div>
 
 {% endblock %}
