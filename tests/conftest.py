@@ -13,6 +13,8 @@ from backend.models.user import User
 from shared.database import db_session, engine, Base
 from shared.config import TestingConfig
 
+from tests.unit.menu.mock_data import get_mock_menu_data
+
 load_dotenv()
 
 # Constants
@@ -29,11 +31,6 @@ SUCCESS_MESSAGE_SELECTOR = '.alert-success'
 ERROR_MESSAGE_SELECTOR = '.alert-error'
 
 test_email = f"registration-test-{uuid.uuid4()}@example.com"
-
-
-@pytest.fixture()
-def generate_test_password(length):
-    pass
 
 
 @pytest.fixture()
@@ -81,10 +78,25 @@ def remove_user_from_db():
 
 
 @pytest.fixture(scope='session')
-def app():
-    """Testing factory pattern"""
-    app = create_app()
-    app.config.from_object(TestingConfig)
+def mock_context_processors():
+    mock_menu_data = get_mock_menu_data()
+
+    def inject_mock_menu_items():
+        return dict(menu_items=mock_menu_data)
+
+    def inject_mock_configured_menu_links():
+        return dict(configured_menu_links=mock_menu_data[0]['links'])
+
+    return [inject_mock_menu_items, inject_mock_configured_menu_links]
+
+
+@pytest.fixture(scope='session')
+def app(mock_context_processors):
+    """Testing factory pattern with mocked context processors"""
+    from backend import create_app
+    from shared.config import TestingConfig
+
+    app = create_app(config_class=TestingConfig, test_context_processors=mock_context_processors)
     return app
 
 

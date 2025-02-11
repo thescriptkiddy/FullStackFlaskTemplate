@@ -18,7 +18,7 @@ from shared.extensions import init_extensions, login_manager
 from backend.utils.helper import register_error_handlers
 
 
-def create_app(config_class=config.Config):
+def create_app(config_class=config.Config, test_context_processors=None):
     """Application-Factory-Pattern"""
     app = Flask(__name__, template_folder=config_class.TEMPLATE_FOLDER, static_folder=config_class.STATIC_FOLDER)
     app.config.from_object(config_class)
@@ -60,17 +60,25 @@ def create_app(config_class=config.Config):
     with app.app_context():
         register_links(app)
 
-    @app.context_processor
-    def inject_menu_items():
-        # Fetch menu items from your database
-        menu_items = Menu.get_menu_data()
-        return dict(menu_items=menu_items)
+    # Handling context processors
 
-    @app.context_processor
-    def inject_configured_menu_links():
-        links = Menu.get_menu_data(menu_id=1)
+    if test_context_processors:
+        for processor in test_context_processors:
+            app.context_processor(processor)
 
-        return dict(configured_menu_links=links)
+    else:
+
+        @app.context_processor
+        def inject_menu_items():
+            # Fetch menu items from your database
+            menu_items = Menu.get_menu_data()
+            return dict(menu_items=menu_items)
+
+        @app.context_processor
+        def inject_configured_menu_links():
+            links = Menu.get_menu_data(menu_id=1)
+
+            return dict(configured_menu_links=links)
 
     @app.cli.command("init-db")
     def init_db_command():
