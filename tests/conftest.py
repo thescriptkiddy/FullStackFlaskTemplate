@@ -1,9 +1,11 @@
 import os
 import subprocess
 import time
+import urllib.parse
 import uuid
 import secrets
 import pytest
+import socket
 from dotenv import load_dotenv
 from flask_security import hash_password
 from playwright.sync_api import Playwright, Page, Browser, BrowserContext
@@ -14,23 +16,38 @@ from shared.database import db_session, engine, Base
 from shared.config import TestingConfig
 
 from tests.unit.menu.mock_data import get_mock_menu_data
+import threading
+from werkzeug.serving import make_server
+from shared.database import init_db
 
 load_dotenv()
 
 # Constants
 BASE_URL = os.getenv("BASE_URL")
-REGISTRATION_URL = f"{BASE_URL}/register"
-LOGIN_URL = f"{BASE_URL}/login"
+REGISTRATION_URL = "/register"
+LOGIN_URL = "/login"
+ITEMS_PAGE = "/items/"
+USER_PAGE = "/users"
 TEST_PASSWORD = "12345678"
 TEST_PASSWORD_6 = "kHud45"
-ITEMS_PAGE = f"{BASE_URL}/items/"
-USER_PAGE = f"{BASE_URL}/users/"
 DELETE_BUTTON_SELECTOR = 'button[name="delete-item"] i.bi.bi-trash'
 EDIT_BUTTON_SELECTOR = ""
 SUCCESS_MESSAGE_SELECTOR = '.alert-success'
 ERROR_MESSAGE_SELECTOR = '.alert-error'
 
 test_email = f"registration-test-{uuid.uuid4()}@example.com"
+
+
+def get_free_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('', 0))
+        return s.getsockname()[1]
+
+
+@pytest.fixture(scope="function")
+def dynamic_base_url():
+    port = get_free_port()
+    return f'http://127.0.0.1:{port}'
 
 
 @pytest.fixture()
@@ -40,17 +57,18 @@ def generate_test_email(request):
     return f"{prefix}-{uuid.uuid4()}@example.com"
 
 
-@pytest.fixture(scope="session")
-def test_constants():
+@pytest.fixture(scope="function")
+def test_constants(dynamic_base_url):
     """Testing constants"""
+
     return {
-        "BASE_URL": BASE_URL,
-        "REGISTRATION_URL": REGISTRATION_URL,
-        "LOGIN_URL": LOGIN_URL,
+        "BASE_URL": dynamic_base_url,
+        "REGISTRATION_URL": f"{dynamic_base_url}{REGISTRATION_URL}",
+        "LOGIN_URL": f"{dynamic_base_url}{LOGIN_URL}",
+        "ITEMS_PAGE": f"{dynamic_base_url}{ITEMS_PAGE}",
+        "USER_PAGE": f"{dynamic_base_url}{USER_PAGE}",
         "TEST_PASSWORD": TEST_PASSWORD,
         "TEST_PASSWORD_6": TEST_PASSWORD_6,
-        "ITEMS_PAGE": ITEMS_PAGE,
-        "USER_PAGE": USER_PAGE,
         "DELETE_BUTTON_SELECTOR": DELETE_BUTTON_SELECTOR,
         "EDIT_BUTTON_SELECTOR": EDIT_BUTTON_SELECTOR,
         "SUCCESS_MESSAGE_SELECTOR": SUCCESS_MESSAGE_SELECTOR,
@@ -85,7 +103,9 @@ def mock_context_processors():
         return dict(menu_items=mock_menu_data)
 
     def inject_mock_configured_menu_links():
-        return dict(configured_menu_links=mock_menu_data[0]['links'])
+        links = mock_menu_data[0]['links']
+        print(f"Injected configured_menu_links: {links}")
+        return dict(configured_menu_links=links)
 
     return [inject_mock_menu_items, inject_mock_configured_menu_links]
 
@@ -97,7 +117,8 @@ def app(mock_context_processors):
     from shared.config import TestingConfig
 
     app = create_app(config_class=TestingConfig, test_context_processors=mock_context_processors)
-    return app
+    with app.app_context():
+        yield app
 
 
 @pytest.fixture(scope='function')
@@ -118,18 +139,15 @@ def test_user(get_db):
     return test_user
 
 
-@pytest.fixture(scope="session", autouse=True)
-def flask_server():
+@pytest.fixture(scope="function", autouse=True)
+def flask_server(app, dynamic_base_url):
     """App Factory Pattern for Testing"""
-    subprocess.run(["flask", "init-db"], check=True)
-    server = subprocess.Popen(["flask", "run"])
-    time.sleep(5)
 
-    app = create_app(config_class=TestingConfig)
-    # Warning does not affect test execution
     with app.app_context():
+        init_db()
+
         existing_user = db_session.query(User).filter_by(email="testuser@testuser.com").first()
-        print(f"Before fixture: User exists = {existing_user is not None}")
+
         if not existing_user:
             test_user = User(
                 email="testuser@testuser.com",
@@ -142,11 +160,27 @@ def flask_server():
             db_session.commit()
             print(f"User added: {test_user.email}")
 
-    yield
-    print("Ending setup_flask_server fixture")
+    # Start server in a separate thread
+    parsed_url = urllib.parse.urlparse(dynamic_base_url)
+    server = make_server(parsed_url.hostname, parsed_url.port, app)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.start()
 
-    server.terminate()
-    server.wait()
+    # Temporarily override the BASE_URL environment variable
+    original_base_url = os.environ.get('BASE_URL')
+    os.environ['BASE_URL'] = dynamic_base_url
+
+    yield
+
+    # Restore original BASE_URL after testing
+    if original_base_url:
+        os.environ['BASE_URL'] = original_base_url
+    else:
+        del os.environ['BASE_URL']
+
+    # Shutdown the server
+    server.shutdown()
+    thread.join()
 
 
 @pytest.fixture(scope="function")
@@ -162,10 +196,10 @@ def page(playwright: Playwright):
 
 
 @pytest.fixture(scope="function")
-def auth_context(flask_server, page):
+def auth_context(flask_server, page, test_constants):
     """Fixture to log in a user"""
     # Login
-    page.goto("http://127.0.0.1:5000/login")
+    page.goto(test_constants["LOGIN_URL"])
     page.fill("#floatingEmail", "testuser@testuser.com")
     page.fill("#floatingPassword", "12345678")
     page.click("#submit")

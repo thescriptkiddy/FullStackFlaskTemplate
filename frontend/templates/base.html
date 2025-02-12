@@ -39,7 +39,7 @@
                 <div class="offcanvas-body d-lg-block">
                     <ul class='nav nav-pills flex-column mb-auto'>
                         {% for link in configured_menu_links: %}
-                        <li><a href="{{ url_for(link.url) }}" class='nav-link'><i class='bi bi-list'></i> {{
+                        <li><a href="{{ url_for(link.url) }}" class='nav-link'> {{
                             link.title }}</a>
                         </li>
                         {% endfor %}

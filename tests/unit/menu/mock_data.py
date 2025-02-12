@@ -6,7 +6,8 @@ def get_mock_menu_data():
             'links': [
                 {'id': 1, 'name': 'Home', 'url': 'home.index', 'title': 'Home'},
                 {'id': 2, 'name': 'Menus', 'url': 'menu.index', 'title': 'Menus'},
-                {'id': 3, 'name': 'Users', 'url': 'users.users_index', 'title': 'Users'}
+                {'id': 3, 'name': 'Users', 'url': 'users.users_index', 'title': 'Users'},
+                {'id': 4, 'name': 'Items', 'url': 'items.items_index', 'title': 'Items'}
             ]
         },
         {

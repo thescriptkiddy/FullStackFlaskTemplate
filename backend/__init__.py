@@ -67,7 +67,6 @@ def create_app(config_class=config.Config, test_context_processors=None):
             app.context_processor(processor)
 
     else:
-
         @app.context_processor
         def inject_menu_items():
             # Fetch menu items from your database
@@ -90,8 +89,8 @@ def create_app(config_class=config.Config, test_context_processors=None):
     def default_route():
         return redirect(url_for(app.config['DEFAULT_ROUTE']))
 
-    @app.route('/')
-    def test_page():
-        return render_template("factory-pattern.html")
+    # @app.route('/')
+    # def test_page():
+    # return render_template("factory-pattern.html")
 
     return app

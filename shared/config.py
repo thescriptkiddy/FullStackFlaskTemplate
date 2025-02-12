@@ -151,7 +151,7 @@ class TestingConfig(Config):
     SECURITY_REMEMBER_ME_DURATION = timedelta(days=30)
 
     SECURITY_POST_CHANGE_VIEW = '/profile'
-    SECURITY_POST_LOGIN_VIEW = '/home.index'
+    SECURITY_POST_LOGIN_VIEW = '/home'
     SECURITY_POST_RESET_VIEW = 'security.login'
 
     # SESSION_COOKIE_SECURE = True

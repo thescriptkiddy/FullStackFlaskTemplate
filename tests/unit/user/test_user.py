@@ -82,19 +82,16 @@ def test_get_all_users(get_db):
     )
 
     get_db.add(user1)
-
     get_db.add(user2)
-
     get_db.commit()
 
-    # TODO LegacyAPIWarning:
     stmt = select(User)
 
-    result = db_session.execute(stmt)
+    result = get_db.execute(stmt)
     all_users = result.scalars().all()
 
     # One user is added during startup
-    assert len(list(all_users)) == 2
+    assert len(list(all_users)) == 3
     assert user1.lastname == "Peter"
     assert user2.lastname == "Curie"
 

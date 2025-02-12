@@ -9,13 +9,17 @@ def test_e2e_create_item(authenticated_page: Page, test_constants):
     THEN it should be visible on the items overview page
     """
     authenticated_page.goto(test_constants["BASE_URL"])
-    authenticated_page.get_by_role("link", name=" Items").click()
+    authenticated_page.get_by_role("link", name="Items").click()
     authenticated_page.get_by_role("button", name="Add an item").click()
     authenticated_page.get_by_label("Create new Item").click()
     authenticated_page.get_by_label("Create new Item").fill("New Item E2E")
     authenticated_page.get_by_role("button", name="Submit Item").click()
     authenticated_page.wait_for_load_state("domcontentloaded")
-    expect(authenticated_page).to_have_url(test_constants["ITEMS_PAGE"])
+    actual_url = authenticated_page.url
+    expected_url = test_constants["ITEMS_PAGE"]
+    print(f"Actual URL: {actual_url}")
+    print(f"Expected URL: {expected_url}")
+    expect(authenticated_page).to_have_url(expected_url)
     authenticated_page.get_by_text("New Item E2E").click()
 
 
