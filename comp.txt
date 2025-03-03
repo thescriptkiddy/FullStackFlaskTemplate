@@ -1,0 +1,55 @@
+
+MODELS
+
+COMPETITIONS
+title: str
+id: int
+uuid: uuid
+start-date: str
+end-date: str
+run: relationship (1:1)
+participant: relationship(n:n)
+hosts: relationships(1:N)
+
+A competition (event) consists of a predefined course which each participant has to drive as fast as possible.
+A competition can have multiple hosts at the same time. All host are allowed to edit, the competition event and to approve runs.
+Only the "creator" of a competition is allowed to delete a competition
+A competition ends once a host decides to end it or if the end-date is reached. (or only if the end-date is reached?)
+If a host decides to end a competition all attendees should be informed upfront.
+Technical note: the "button" end-competition sets the end-date to the current time. no status change needed.
+
+
+_______________________
+RUN
+title: str
+id: int
+uuid: uuid
+time: str (example: mm:ss:ms)
+competition: relationship (1:1)
+participant: relationship (1:n)
+link: str (url)
+status: str (pending, approved)
+_______________________
+participant
+name: relationship (user)
+id:int (forKey user.id)
+uuid: uuid
+runs: relationship
+A participant can only submit one run per competition.
+A participant can attend multiple competition at the same time, which can lead to multiple runs (objects) per participant.
+A participant can edit its runs as long as the status is "pending"
+
+_______________________
+HOST:
+name: relationship (user)
+id: int
+uuid: uuid
+competition: relationship
+
+
+
+
+
+
+
+

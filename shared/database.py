@@ -7,9 +7,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from shared.config import Config
 
-# TODO Refactor to reflect config.py settings
 # Define the database URI
-# DATABASE_URI = 'sqlite:///app.db'  # Adjust this as needed for your database
+
 SQLALCHEMY_DATABASE_URI = os.environ.get('DB_URI')
 
 # Create the SQLAlchemy engine
@@ -22,9 +21,14 @@ Session = sessionmaker(bind=engine)
 db_session = scoped_session(Session)
 
 # Create a base class for declarative models
-Base = sqlalchemy.orm.declarative_base()
+# Base = sqlalchemy.orm.declarative_base()
+Base = declarative_base()
 
 
 # For initial database setup
 def init_db():
+    from backend.models.menu import Menu
+    from backend.models.item import Item
+    from backend.models.role import Role
+    from backend.models.user import User
     Base.metadata.create_all(bind=engine)

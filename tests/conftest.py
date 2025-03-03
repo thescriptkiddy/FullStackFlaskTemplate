@@ -7,18 +7,21 @@ import secrets
 import pytest
 import socket
 from dotenv import load_dotenv
-from flask_security import hash_password
+from flask_security import hash_password, login_user, SQLAlchemySessionUserDatastore
 from playwright.sync_api import Playwright, Page, Browser, BrowserContext
+from sqlalchemy import select
 
 from backend import create_app
+from backend.models.role import Role
 from backend.models.user import User
 from shared.database import db_session, engine, Base
 from shared.config import TestingConfig
+# from shared.extensions import user_datastore
 
 from tests.unit.menu.mock_data import get_mock_menu_data
 import threading
 from werkzeug.serving import make_server
-from shared.database import init_db
+from shared.database import init_db, engine
 
 load_dotenv()
 
@@ -36,6 +39,8 @@ SUCCESS_MESSAGE_SELECTOR = '.alert-success'
 ERROR_MESSAGE_SELECTOR = '.alert-error'
 
 test_email = f"registration-test-{uuid.uuid4()}@example.com"
+
+user_datastore = SQLAlchemySessionUserDatastore(db_session, User, Role)
 
 
 def get_free_port():
@@ -114,7 +119,7 @@ def mock_context_processors():
 def app(mock_context_processors):
     """Testing factory pattern with mocked context processors"""
     from backend import create_app
-    from shared.config import TestingConfig
+    from shared.config import TestingConfig, Config
 
     app = create_app(config_class=TestingConfig, test_context_processors=mock_context_processors)
     with app.app_context():
@@ -130,13 +135,26 @@ def get_db(app):
         Base.metadata.drop_all(bind=engine)
 
 
+@pytest.fixture(scope='function')
+def init_user_datastore(app):
+    # Initialize user_datastore
+    from shared.extensions import init_extensions
+    init_extensions(app)
+    yield user_datastore
+
+
 @pytest.fixture(scope="function")
 def test_user(get_db):
-    """Fixture create a test user for unit tests"""
-    test_user = User(email="unittest@testuser.com", firstname="Unit", lastname="Test")
-    get_db.add(test_user)
-    get_db.commit()
-    return test_user
+    """Fixture loads a test user for unit tests"""
+
+    return get_db.scalars(select(User).filter_by(email='testuser@testuser.com')).first()
+
+
+@pytest.fixture(scope='function')
+def new_user(get_db, init_user_datastore):
+    user = user_datastore.create_user(email='test@example.com', password='password')
+    get_db.session.commit()
+    return user
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -220,7 +238,7 @@ def authenticated_page(playwright: Playwright, auth_context: BrowserContext) -> 
     browser.close()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def client(app):
     yield app.test_client()
 
@@ -228,3 +246,26 @@ def client(app):
 @pytest.fixture()
 def runner(app):
     return app.test_cli_runner()
+
+
+@pytest.fixture
+def authenticated_client(app, get_db, client):
+    with app.app_context():
+        user = get_db.query(User).filter_by(email="testuser@testuser.com").first()
+        if not user:
+            user = User(
+                email="testuser@testuser.com",
+                password="12345789",
+                active=True
+            )
+            get_db.add(user)
+            get_db.commit()
+
+    client = app.test_client()
+    with client.session_transaction() as session:
+        session['user_id'] = user.id
+        session['user_firstname'] = user.firstname
+        session['user_lastname'] = user.lastname
+        session['_fresh'] = True
+
+    return client

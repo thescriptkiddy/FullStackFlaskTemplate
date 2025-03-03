@@ -1,23 +1,39 @@
 import pytest
-from backend.models.menu import Menu
+from sqlalchemy import select
+
+from backend.models.menu import Menu, Link
 from shared.database import db_session
 from tests.conftest import test_user
 from tests.unit.menu.mock_data import get_mock_menu_data
 
 
 @pytest.fixture
-def new_menu_item(get_db, test_user):
+def new_menu_in_db(get_db, test_user):
     """Fixture to create a new menu"""
+    link_1 = Link(
+        name="Home",
+        endpoint="home.index",
+        title="Go Home",
+        order=0,
+    )
+
+    link_2 = Link(
+        name="Items",
+        endpoint="items.index_items",
+        title="Items",
+        order=0,
+    )
+
     menu = Menu(
-        name="New Menu",
-        links=[{'id': 1, 'name': 'Home', 'endpoint': 'home.index', 'title': 'Home'},
-               {'id': 2, 'name': 'Menus', 'endpoint': 'menu.index', 'title': 'Menus'},
-               {'id': 3, 'name': 'Users', 'endpoint': 'users.users_index', 'title': 'Users'}
-               ]
+        name="Main Menu in DB",
+        links=[link_1, link_2]
     )
 
     get_db.add(menu)
+    get_db.add(link_1, link_2)
+
     get_db.commit()
+    get_db.refresh(menu)
 
     return menu
 

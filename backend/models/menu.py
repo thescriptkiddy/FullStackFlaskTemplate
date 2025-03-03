@@ -54,7 +54,7 @@ class Menu(Base):
             menu_info = {
                 'name': menu.name,
                 'id': menu.id,
-                'links': [{'name': link.name, 'url': link.endpoint, 'title': link.title, 'id': link.id} for link in
+                'links': [{'name': link.name, 'endpoint': link.endpoint, 'title': link.title, 'id': link.id} for link in
                           menu.links]
             }
             menu_data.append(menu_info)
@@ -67,7 +67,7 @@ class Menu(Base):
     @staticmethod
     @handle_sql_exceptions
     def delete_menu(menu_id):
-        menu = db_session.query(Menu).get(menu_id)
+        menu = db_session.scalars(select(Menu).filter_by(id=menu_id)).first()
         if menu:
             # Clear the relationships
             menu.links = []

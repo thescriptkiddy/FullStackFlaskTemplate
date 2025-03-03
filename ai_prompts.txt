@@ -1,0 +1,316 @@
+PYTHON-VERSION: 3.12
+IDE: PyCharm CE (latest)
+VIRTUAL-ENV: Yes
+OS: macOS 15.3.1
+PROJECT-STATUS: IN DEVELOPMENT
+________________________________________________________________________________________________________________________
+BASIC STRUCTURE APPROACH
+- Backend and Frontend code is separated into to folders e.g. backend and frontend
+- all "features" are organized into packages
+- each package includes an __init__.py file with its Blueprint definition
+- each package includes, if needed, a forms.py file for the form configuration, a routes.py file for the route-definitions
+- most "models" have their own models-name.py file (user.py, or item.py), except menu and link model are currently in one file (part of the menu feature)
+
+____________________________________________________________________________________________________________________________________________
+TESTING APPROACH
+- Tests are organized into E2E, Integration and Unit-Test folders
+- For E2E I am using Playwright
+- I sometime use mocks especially if the data needs to be available during app initialization, such as my menu-links right now
+-
+____________________________________________________________________________________________________________________________________________
+FLASK APPLICATION FACTORY PATTERN: YES
+
+Extensions Initialization
+Located in:b backend/__init__.py
+- all extensions are organized into one init_extensions function
+____________________________________________________________________________________________________________________________________________
+FLASK CONFIGURATION
+I have different Configuration Classes.
+- Config(a Base class)
+- DevelopmentConfig
+- ProductionConfig
+- TestingConfig
+____________________________________________________________________________________________________________________________________________
+Each class contains the relevant settings for the app and its
+extensions like Flask Security, Mailman or others
+- I use env variables and a .env file
+
+DATABASE SETUP
+Located in: shared/database.py and shared/extensions.py
+- in memory sql database for testing and development
+- Postgres SQL in production (not yet)
+- SQL Alchemy 2.x
+
+AUTHENTICATION
+Flask-Security:
+- User registration
+- role management (not yet)
+- password hashing
+- I am extending the default forms
+- I implemented custom views (templates)
+
+BLUEPRINTS
+Yes.
+Example: Blueprint for the items
+Located in: backend/app/items/__init__.py
+
+from flask import Blueprint
+
+bp = Blueprint('items', __name__, template_folder="../frontend/templates/items", url_prefix="/items")
+
+from backend.app.items import routes
+
+ERRORHANDLING
+Example: Custom Error Handler
+Located in: backend/utils/helper.py
+
+I do have custom error handling for sql exceptions
+def handle_sql_exceptions(func):
+    """Decorator to handle common SQL Exceptions """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except ValueError as err:
+            logging.error("Value error: %s", err)
+            return jsonify({"status": "error", "message": str(err)}), 400
+        except DataError as err:
+            logging.error("Incorrect data: %s", err)
+            return jsonify({"status": "error", "message": "Incorrect data"}), 400
+        except IntegrityError as err:
+            logging.error("Duplicate entry: %s", err)
+            return jsonify({"status": "error", "message": "Duplicate entry"}), 400
+        except OperationalError as err:
+            logging.error("Query failed due to lock/dead lock issues: %s", err)
+            return jsonify({"status": "error", "message": "Database operation failed"}), 500
+        except SQLAlchemyError as err:
+            logging.error("Unexpected SQLAlchemy error: %s", err)
+            return jsonify({"status": "error", "message": "An unexpected database error occurred"}), 500
+
+    return wrapper
+
+
+
+LOGGING
+Example: Custom Logging
+Located in: backend/utils/helper.py
+
+def register_error_handlers(app):
+    @app.errorhandler(401)
+    def unauthorized_error(error):
+        return render_template('401_error.html'), 401
+
+    @app.errorhandler(404)
+    def not_found_error(error):
+        return render_template('404_error.html'), 404
+
+
+CUSTOM COMMANDS
+
+    @app.cli.command("init-db")
+    def init_db_command():
+        """Initialize the database."""
+        Base.metadata.create_all(bind=db_session.bind)  # Create tables based on models.
+        click.echo('Initialized the database.')
+
+FORMS
+- WTForms
+
+MIGRATIONS
+
+- Flask-Migrate
+
+DEPLOYMENT
+- nothing yet,
+- I am considering to use docker in combination with GitHubActions
+
+DEPENDENCIES
+Flask~=3.1.0
+Flask-Security
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-WTF
+Flask-Admin
+alembic
+gunicorn
+itsdangerous
+pytest~=8.3.4
+Werkzeug~=3.1.3
+wheel
+Jinja2
+click~=8.1.7
+Bootstrap-Flask
+selenium
+bcrypt~=4.2.1
+SQLAlchemy~=2.0.36
+WTForms~=3.1.2
+
+python-dotenv~=1.0.1
+pydantic~=2.10.3
+starlette~=0.42.0
+playwright~=1.49.1
+
+beautifulsoup4~=4.12.3
+
+PROJEKTSTRUCTURE
+.
+ |-app.db
+ |-run.py
+ |-auth_state.json
+ |-ai_prompts.txt
+ |-state.json
+ |-pytest.ini
+ |-frontend
+ | |-static
+ | | |-css
+
+ | |-templates
+ | | |-home
+ | | | |-index.html
+ | | | |-bootstrap-table.html
+ | | |-base.html
+ | | |-security
+ | | | |-forgot_password.html
+ | | | |-reset_password.html
+ | | | |-register_user.html
+ | | | |-change_password.html
+ | | | |-login_user.html
+ | | |-auth
+ | | | |-index.html
+ | | |-_navigation.html
+ | | |-401_error.html
+ | | |-table.html
+ | | |-404_error.html
+ | | |-users
+ | | | |-profile.html
+ | | | |-index.html
+ | | | |-edit_user.html
+ | | | |-create-user.html
+ | | |-menu
+ | | | |-edit_link.html
+ | | | |-index.html
+ | | | |-sitemap.html
+ | | | |-edit_menu.html
+ | | | |-create_menu.html
+ | | |-_basehtml.html
+ | | |-items
+ | | | |-create-item.html
+ | | | |-index.html
+ | | | |-edit-item.html
+ | | |-factory-pattern.html
+ |-requirements.txt
+ |-Dockerfile
+ |-tests
+ | |-unit
+ | | |-security
+ | | | |-test_security.py
+ | | | |-conftest.py
+ | | | |-__init__.py
+ | | | |-__pycache__
+ | | |-__init__.py
+ | | |-user
+ | | | |-conftest.py
+ | | | |-test_user.py
+ | | | |-__init__.py
+ | | | |-__pycache__
+ | | |-__pycache__
+ | | |-item
+ | | | |-conftest.py
+ | | | |-__init__.py
+ | | | |-__pycache__
+ | | | |-test_item.py
+ | | |-menu
+ | | | |-conftest.py
+ | | | |-test_link.py
+ | | | |-__init__.py
+ | | | |-mock_data.py
+ | | | |-__pycache__
+ | | | |-test_menu.py
+ | |-conftest.py
+ | |-integration
+ | | |-home
+ | | | |-__init__.py
+ | | | |-__pycache__
+ | | | |-test_home_route.py
+ | | |-__init__.py
+ | | |-__pycache__
+ | |-__init__.py
+ | |-__pycache__
+ | |-e2e
+ | | |-conftest.py
+ | | |-screenshots
+ | | |-__init__.py
+ | | |-__pycache__
+ | | |-test_e2e_user_view.py
+ | | |-test_e2e_item.py
+ | | |-test_e2e_login.py
+ | | |-test_e2e_registration.py
+ |-playwright.config.js
+ |-backend
+ | |-app
+ | | |-home
+ | | | |-__init__.py
+ | | | |-__pycache__
+ | | | |-routes.py
+ | | |-auth
+ | | | |-__init__.py
+ | | | |-__pycache__
+ | | | |-forms.py
+ | | | |-routes.py
+ | | |-__init__.py
+ | | |-__pycache__
+ | | |-users
+ | | | |-__init__.py
+ | | | |-__pycache__
+ | | | |-forms.py
+ | | | |-routes.py
+ | | |-menu
+ | | | |-__init__.py
+ | | | |-__pycache__
+ | | | |-forms.py
+ | | | |-routes.py
+ | | |-items
+ | | | |-__init__.py
+ | | | |-__pycache__
+ | | | |-forms.py
+ | | | |-routes.py
+ | |-__init__.py
+ | |-utils
+ | | |-route_helpers.py
+ | | |-__init__.py
+ | | |-__pycache__
+ | | |-helper.py
+ | |-models
+ | | |-user.py
+ | | |-__init__.py
+ | | |-__pycache__
+ | | |-role.py
+ | | |-menu.py
+ | | |-item.py
+ | |-__pycache__
+ |-shared
+ | |-config.py
+ | |-database.py
+ | |-__init__.py
+ | |-__pycache__
+ | |-extensions.py
+ |-__pycache__
+ |-playwright
+ |-project_structure.txt
+ |-README.md
+ |-package-lock.json
+ |-package.json
+ |-htmlcov
+ | |-z_f4d5dd098f5334de_conftest_py.html
+ | |-index.html
+ | |-z_f4d5dd098f5334de_test_item_py.html
+ | |-style_cb_8e611ae1.css
+ | |-keybd_closed_cb_ce680311.png
+ | |-coverage_html_cb_6fb7b396.js
+ | |-function_index.html
+ | |-status.json
+ | |-favicon_32_cb_58284776.png
+ | |-z_f4d5dd098f5334de___init___py.html
+ | |-class_index.html
+ |-app.log

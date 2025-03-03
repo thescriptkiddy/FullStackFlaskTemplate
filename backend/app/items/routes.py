@@ -9,6 +9,7 @@ from backend.models.item import Item
 from backend.app.items import bp
 from backend.app.items.forms import CreateItemForm, UpdateItemForm
 from backend.utils.route_helpers import nav_item
+from backend.utils.database_helper import create_record, read_records, update_record, delete_record
 
 
 @bp.route('/')
@@ -16,16 +17,13 @@ from backend.utils.route_helpers import nav_item
 @handle_sql_exceptions
 @nav_item(title="Items", order=2)
 def items_index():
-    result = db_session.execute(select(Item))
-    all_items = result.scalars().all()
-
     message = request.args.get('message')
     category = request.args.get('category', 'info')
 
     if message:
         flash(message, category)
 
-    return render_template('items/index.html', all_items=all_items)
+    return render_template('items/index.html', all_items=read_records(Item))
 
 
 @bp.route("/read/<string:uuid_str>", methods=["GET"])
@@ -33,12 +31,16 @@ def items_index():
 @handle_sql_exceptions
 def read_item_by_id(uuid_str):
     uuid_obj = UUID(uuid_str)
-    fetch_item = db_session.query(Item).filter(Item.uuid == uuid_obj).first()
-    if not fetch_item:
-        flash("Item not found", category='error')
-        return jsonify({"status": "error", "message": "Item not found"}), 404
-    else:
-        return fetch_item
+    fetch_item = read_records(Item, uuid_obj)
+
+    # Convert the item to a dictionary
+    item_dict = {
+        'id': str(fetch_item.id),
+        'title': fetch_item.title,
+        # Add other fields as needed
+    }
+
+    return jsonify(item_dict), 200
 
 
 @bp.route('/edit-item/<string:uuid_str>', methods=["GET", "POST"])
@@ -46,7 +48,7 @@ def read_item_by_id(uuid_str):
 @handle_sql_exceptions
 def update_item(uuid_str):
     uuid_obj = UUID(uuid_str)
-    fetch_item = db_session.query(Item).filter(Item.uuid == uuid_obj).first()
+    fetch_item = read_records(Item, uuid_obj)
     if not fetch_item:
         flash('Item not found', 'error')
         return redirect(url_for('items.items_index'))
@@ -58,6 +60,7 @@ def update_item(uuid_str):
             fetch_item.title = form.title.data
             db_session.commit()
             flash('Item successfully updated', 'success')
+            return redirect(url_for('items.items_index'))
         else:
             flash('No changes were made', 'info')
             return redirect(url_for('items.items_index'))
@@ -70,11 +73,9 @@ def update_item(uuid_str):
 def create_item():
     form = CreateItemForm()
     if form.validate_on_submit():
-        new_item = Item(
-            title=form.title.data
-        )
-        db_session.add(new_item)
-        db_session.commit()
+        create_record(Item,
+                      title=form.title.data
+                      )
         flash('Item created successfully', 'success')
         return redirect(url_for('items.items_index'))
     return render_template("items/create-item.html", form=form)
@@ -89,6 +90,7 @@ def delete_item_by_id(uuid_str):
     if fetch_item_by_id:
         db_session.delete(fetch_item_by_id)
         db_session.commit()
+
         return jsonify({"status": "success", "message": "Item successfully deleted"}), 200
     else:
         return jsonify({"status": "error", "message": "Item not found"}), 404

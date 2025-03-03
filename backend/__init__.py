@@ -14,7 +14,7 @@ from backend.app.items import bp
 from backend.app.users import bp
 from backend.app.menu import bp
 from shared.database import db_session, Base, init_db
-from shared.extensions import init_extensions, login_manager
+from shared.extensions import init_extensions, login_manager, setup_logger
 from backend.utils.helper import register_error_handlers
 
 
@@ -22,10 +22,9 @@ def create_app(config_class=config.Config, test_context_processors=None):
     """Application-Factory-Pattern"""
     app = Flask(__name__, template_folder=config_class.TEMPLATE_FOLDER, static_folder=config_class.STATIC_FOLDER)
     app.config.from_object(config_class)
-    logging.basicConfig(level=logging.DEBUG)
-    logging.getLogger(__name__)
 
     init_extensions(app)
+
     register_error_handlers(app)
 
     with app.app_context():
