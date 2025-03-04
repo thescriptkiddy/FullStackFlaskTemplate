@@ -57,8 +57,10 @@ def update_item(uuid_str):
 
     if form.validate_on_submit():
         if form.title.data != fetch_item.title:
-            fetch_item.title = form.title.data
-            db_session.commit()
+            update_record(Item, uuid_obj,
+                          title=form.title.data
+                          )
+
             flash('Item successfully updated', 'success')
             return redirect(url_for('items.items_index'))
         else:
@@ -86,11 +88,7 @@ def create_item():
 @handle_sql_exceptions
 def delete_item_by_id(uuid_str):
     uuid_obj = UUID(uuid_str)
-    fetch_item_by_id = db_session.query(Item).filter(Item.uuid == uuid_obj).first()
-    if fetch_item_by_id:
-        db_session.delete(fetch_item_by_id)
-        db_session.commit()
-
+    if delete_record(Item, uuid_obj):
         return jsonify({"status": "success", "message": "Item successfully deleted"}), 200
     else:
         return jsonify({"status": "error", "message": "Item not found"}), 404

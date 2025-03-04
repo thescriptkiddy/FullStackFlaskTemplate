@@ -57,10 +57,9 @@ def update_record(model: Type[Base], *identifier: Union[str, uuid.UUID], **kwarg
 def delete_record(model: Type[Base], identifier: Union[str, uuid.UUID]) -> bool:
     """Deletes a database object"""
     logger.info(f"Deleting record id: {identifier}")
-    result = db_session.session.execute(db_session.select(model).where(model.id == uuid.UUID(identifier)))
-    record = result.scalar_one_or_none()
+    record = db_session.query(model).filter(model.uuid == identifier).first()
     if record:
-        db_session.session.delete(record)
-        db_session.session.commit()
+        db_session.delete(record)
+        db_session.commit()
         return True
     return False
