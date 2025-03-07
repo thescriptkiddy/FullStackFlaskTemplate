@@ -20,7 +20,7 @@ Technical note: the "button" end-competition sets the end-date to the current ti
 
 
 _______________________
-RUN
+HEAT
 title: str
 id: int
 uuid: uuid

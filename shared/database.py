@@ -21,8 +21,8 @@ Session = sessionmaker(bind=engine)
 db_session = scoped_session(Session)
 
 # Create a base class for declarative models
-# Base = sqlalchemy.orm.declarative_base()
-Base = declarative_base()
+
+Base = sqlalchemy.orm.declarative_base()
 
 
 # For initial database setup
